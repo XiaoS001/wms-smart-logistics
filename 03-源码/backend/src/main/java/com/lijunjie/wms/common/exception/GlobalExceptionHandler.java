@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -82,6 +83,19 @@ public class GlobalExceptionHandler {
         log.warn("http method not supported: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
                 .body(Result.error(405, "请求方法不支持：" + e.getMethod()));
+    }
+
+    /**
+     * 请求的媒体类型不支持（例如接口要求 JSON，客户端却发送表单或未声明 Content-Type）。
+     *
+     * <p>同样属于客户端问题，返回 415 而不是 500。</p>
+     */
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    public ResponseEntity<Result<Void>> handleMediaTypeNotSupported(HttpMediaTypeNotSupportedException e) {
+        String contentType = e.getContentType() == null ? "(未声明)" : e.getContentType().toString();
+        log.warn("http media type not supported: {}", contentType);
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                .body(Result.error(415, "请求内容类型不支持：" + contentType + "，请使用 application/json"));
     }
 
     /** 兜底：未预期的异常，记录完整堆栈但不向前端暴露细节 */
