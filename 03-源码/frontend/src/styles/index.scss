@@ -1,0 +1,203 @@
+/**
+ * 全局样式入口。
+ *
+ * 加载顺序：UnoCSS 重置 -> 主题变量 -> 全局布局样式 -> 第三方组件微调。
+ * 说明：Element Plus 的样式在 main.ts 中先于本文件加载，因此此处可以覆盖它。
+ */
+
+/* ---------------------------- 主题变量 ---------------------------- */
+:root {
+  /* 主色：采用偏冷的科技蓝，符合仓储/物流系统的行业观感 */
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #5b8def;
+  --el-color-primary-light-5: #93b4f5;
+  --el-color-primary-light-7: #c3d5fa;
+  --el-color-primary-light-8: #dbe6fc;
+  --el-color-primary-light-9: #eff4fe;
+  --el-color-primary-dark-2: #1d4fd7;
+
+  /* 语义色 */
+  --el-color-success: #10b981;
+  --el-color-warning: #f59e0b;
+  --el-color-danger: #ef4444;
+  --el-color-info: #6b7280;
+
+  /* 项目自定义变量 */
+  --wms-sidebar-width: 220px;
+  --wms-sidebar-collapsed-width: 64px;
+  --wms-header-height: 56px;
+  --wms-tabbar-height: 40px;
+  --wms-sidebar-bg: #1f2937;
+  --wms-sidebar-bg-hover: #111827;
+  --wms-sidebar-text: #cbd5e1;
+  --wms-sidebar-text-active: #ffffff;
+  --wms-page-bg: #f5f7fa;
+  --wms-card-radius: 8px;
+  --wms-shadow-sm: 0 1px 2px rgb(0 0 0 / 6%);
+  --wms-shadow-md: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+/* ---------------------------- 基础重置 ---------------------------- */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    'Inter', system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  font-size: 14px;
+  color: #303133;
+  background-color: var(--wms-page-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 数字等宽显示：表格中的数量、距离对齐更整齐 */
+.num,
+.el-table .cell .num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------- 滚动条美化 ---------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(144 147 153 / 35%);
+  border-radius: 4px;
+
+  &:hover {
+    background-color: rgb(144 147 153 / 55%);
+  }
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+/* ---------------------------- 通用布局类 ---------------------------- */
+/* 页面根容器：统一内边距，保证各页面视觉一致 */
+.page-root {
+  padding: 16px;
+  min-height: calc(100vh - var(--wms-header-height) - var(--wms-tabbar-height));
+}
+
+/* 卡片：统一圆角与阴影 */
+.wms-card {
+  background: #fff;
+  border-radius: var(--wms-card-radius);
+  box-shadow: var(--wms-shadow-sm);
+  padding: 16px;
+
+  & + .wms-card {
+    margin-top: 12px;
+  }
+}
+
+/* 查询工具条 */
+.wms-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+
+  .el-input,
+  .el-select {
+    width: 200px;
+  }
+}
+
+/* 工具条右侧操作区 */
+.wms-toolbar__right {
+  margin-left: auto;
+  display: flex;
+  gap: 10px;
+}
+
+/* 卡片标题 */
+.wms-card__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+
+  &::before {
+    content: '';
+    width: 3px;
+    height: 15px;
+    background: var(--el-color-primary);
+    border-radius: 2px;
+  }
+}
+
+/* 分页容器 */
+.wms-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+/* ---------------------------- 表格微调 ---------------------------- */
+.el-table {
+  th.el-table__cell {
+    background-color: #fafafa !important;
+    color: #4b5563;
+    font-weight: 600;
+  }
+
+  .el-table__cell {
+    padding: 8px 0;
+  }
+}
+
+/* 表格内的标签不要撑高行 */
+.el-table .el-tag {
+  height: 22px;
+  line-height: 20px;
+}
+
+/* ---------------------------- 进度条颜色 ---------------------------- */
+#nprogress .bar {
+  background: var(--el-color-primary) !important;
+  height: 2px !important;
+}
+
+#nprogress .peg {
+  box-shadow:
+    0 0 10px var(--el-color-primary),
+    0 0 5px var(--el-color-primary) !important;
+}
+
+/* ---------------------------- 过渡动画 ---------------------------- */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(8px);
+}
