@@ -1,0 +1,56 @@
+[
+  {
+    "module": "用户与权限管理",
+    "script": "verify-auth-module",
+    "passed": 21,
+    "failed": 0
+  },
+  {
+    "module": "仓库与库位管理",
+    "script": "verify-warehouse-module",
+    "passed": 30,
+    "failed": 0
+  },
+  {
+    "module": "商品与分类管理",
+    "script": "verify-product-module",
+    "passed": 53,
+    "failed": 0
+  },
+  {
+    "module": "货位分配算法服务",
+    "script": "verify-slotting-service",
+    "passed": 28,
+    "failed": 0
+  },
+  {
+    "module": "入库管理",
+    "script": "verify-inbound-module",
+    "passed": 38,
+    "failed": 0
+  },
+  {
+    "module": "出库管理",
+    "script": "verify-outbound-module",
+    "passed": 51,
+    "failed": 0
+  },
+  {
+    "module": "库存管理",
+    "script": "verify-stock-module",
+    "passed": 53,
+    "failed": 0
+  },
+  {
+    "module": "报表统计",
+    "script": "verify-report-module",
+    "passed": 58,
+    "failed": 0
+  },
+  {
+    "module": "货位优化方案",
+    "script": "verify-slotting-plan",
+    "passed": 55,
+    "failed": 0
+  }
+]
