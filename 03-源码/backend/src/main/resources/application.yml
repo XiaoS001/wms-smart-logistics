@@ -1,0 +1,97 @@
+# ============================================================
+#  WMS 后端配置（可安全入库）
+#
+#  说明：
+#    - 本文件中的数据库密码使用占位符，请勿把真实密码写在这里
+#    - 本地开发请在 application-local.yml 中填写真实密码
+#      （该文件已被 .gitignore 排除，不会进入版本库）
+#    - 启动方式：--spring.profiles.active=local
+# ============================================================
+
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  application:
+    name: wms
+
+  # 本地开发请通过 application-local.yml 覆盖以下数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/wms?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${WMS_DB_USERNAME:wms}
+    password: ${WMS_DB_PASSWORD:请通过环境变量或 application-local.yml 配置}
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 50
+      max-wait: 60000
+      validation-query: SELECT 1
+      test-while-idle: true
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    default-property-inclusion: non_null
+
+# ---------- MyBatis-Plus ----------
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.lijunjie.wms.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# ---------- 接口文档 ----------
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+# ---------- 业务参数 ----------
+wms:
+  # JWT 配置（生产环境请通过环境变量覆盖）
+  jwt:
+    secret: ${WMS_JWT_SECRET:please-change-this-secret-in-production}
+    expire-hours: 12
+  # 算法模块参数（与《算法设计说明书》保持一致）
+  algorithm:
+    # 遗传算法求货位分配
+    ga:
+      population-size: 80
+      generations: 300
+      crossover-rate: 0.9
+      mutation-rate: 0.15
+      tournament-size: 3
+      elitism: 2
+    # 蚁群算法求拣货路径
+    aco:
+      ant-count: 25
+      iterations: 80
+      alpha: 1.0
+      beta: 3.0
+      rho: 0.4
+      q: 100
+      elite: 2
+    # 拣货点数超过该阈值时改用最近邻策略，保证响应时间不超过 1 秒
+    aco-max-pick-points: 40
+
+logging:
+  level:
+    root: info
+    com.lijunjie.wms: debug

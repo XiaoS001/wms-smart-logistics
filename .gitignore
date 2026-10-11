@@ -1,0 +1,90 @@
+# ============================================================
+#  WMS 项目 .gitignore
+#  原则：构建产物、依赖、IDE 配置、日志、含密码的本地配置一律不入库
+# ============================================================
+
+# ---------- 敏感信息（最重要）----------
+# 本地数据库连接配置（含真实密码），仅存在于开发机
+**/application-local.yml
+**/application-local.yaml
+**/application-local.properties
+*.local.yml
+*.local.yaml
+*.local.properties
+
+# 数据库与开发环境速查表（含明文密码，仅本地留存）
+**/数据库与开发环境速查表.md
+
+# 密钥与证书
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+
+# ---------- Java / Maven ----------
+target/
+!.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+*.ear
+*.log
+hs_err_pid*
+replay_pid*
+
+# ---------- Node / 前端 ----------
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ---------- IDE ----------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/extensions.json
+*.swp
+*.swo
+
+# ---------- 操作系统 ----------
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# ---------- Python（算法原型）----------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ipynb_checkpoints/
+venv/
+.venv/
+
+# ---------- 运行时数据 ----------
+logs/
+*.pid
+*.seed
+*.tmp
+*.bak
+
+# ---------- 大体积安装包（环境重建用，不入库）----------
+*.zip
+*.msi
+*.exe
+!05-部署与运维/**/*.exe
+
+# ---------- 论文与过程材料的临时文件 ----------
+~$*.docx
+~$*.xlsx
+~$*.pptx
+*.asd
