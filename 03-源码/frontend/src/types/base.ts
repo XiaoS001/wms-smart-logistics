@@ -74,7 +74,7 @@ export interface GenerateLocationsRequest {
   /** A 区最大距离（米） */
   aisleDistance?: number
   /** B 区最大距离（米） */
-  bDistance?: number
+  rowDistance?: number
   capacity?: number
   overwrite?: boolean
 }
