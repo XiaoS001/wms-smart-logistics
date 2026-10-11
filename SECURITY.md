@@ -29,7 +29,30 @@
 
 ## 四、本地开发的凭据配置方式
 
-### 方式一：本地配置文件（推荐）
+> 三种方式任选其一；同时存在时优先级：命令行参数 > 环境变量 > profile 配置文件。
+> **推荐方式一**：一次设置，之后无论用命令行、IDEA 还是打包运行都不需要再指定 profile。
+
+### 方式一：环境变量（推荐，已在本机配置好）
+
+Spring Boot 能直接识别 `SPRING_DATASOURCE_*` 形式的环境变量，因此**不需要设置任何 profile**：
+
+```powershell
+# 用户级设置（只需执行一次，之后新开的窗口/IDE 都会继承）
+[Environment]::SetEnvironmentVariable('SPRING_DATASOURCE_USERNAME', 'wms', 'User')
+[Environment]::SetEnvironmentVariable('SPRING_DATASOURCE_PASSWORD', '你的密码', 'User')
+
+# 仅对当前窗口生效
+$env:SPRING_DATASOURCE_USERNAME = 'wms'
+$env:SPRING_DATASOURCE_PASSWORD = '你的密码'
+```
+
+对应地，`application.yml` 中使用的是 `${WMS_DB_PASSWORD:...}` 占位符，
+Spring 的环境变量优先级高于配置文件，因此会自动被上面的设置覆盖。
+
+**在 IDEA 中生效的方法**：环境变量是进程启动时继承的，所以要**完全退出 IDEA 再重新打开**
+（仅关闭项目不够），之后点运行即可，无需配置 "活动配置文件"。
+
+### 方式二：本地配置文件（适合多套环境切换）
 
 ```bash
 # 1. 复制模板
@@ -42,20 +65,23 @@ cp 03-源码/backend/src/main/resources/application-local.yml.example \
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-### 方式二：环境变量
+IDEA 中对应设置：运行/调试配置 → 修改选项 → 勾选「活动配置文件」→ 填入 `local`。
 
-```powershell
-$env:WMS_DB_PASSWORD = "你的密码"
-$env:WMS_JWT_SECRET  = "你的随机密钥"
-mvn spring-boot:run
+### 方式三：命令行参数（临时覆盖）
+
+```bash
+java -jar wms-1.0.0.jar --spring.datasource.password=你的密码
 ```
-
-> 两种方式可同时存在，环境变量优先级更高。
 
 ## 五、答辩与演示时的注意事项
 
-1. **演示前检查**：确认演示用的电脑上已创建 `application-local.yml`（或已设置环境变量），否则后端启动会因密码占位符而连接失败。
-2. **代码展示时**：可以直接展示 `application.yml`，向评委说明"密码用环境变量注入，避免硬编码"，这是工程规范的正向加分项。
+1. **演示前检查**：确认演示电脑上要么已设置环境变量，要么已创建 `application-local.yml`，
+   否则后端启动会因密码占位符而连接失败。最稳妥的自检命令：
+   ```powershell
+   & '项目根\05-部署与运维\scripts\smoke-test-backend.ps1'
+   ```
+2. **代码展示时**：可以直接展示 `application.yml`，向评委说明"密码用环境变量注入，避免硬编码"，
+   这是工程规范的正向加分项。
 3. **切勿**在答辩投屏时打开 `application-local.yml` 或本地速查表。
 
 ## 六、如果密码曾经被提交过（补救措施）
