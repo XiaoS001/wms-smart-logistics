@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="403" height="723" viewBox="0 0 403 723" font-family="Segoe UI, Microsoft YaHei, sans-serif">
+<defs>
+<linearGradient id="pathGradient" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%%" stop-color="#2563eb"/><stop offset="100%%" stop-color="#22d3ee"/>
+</linearGradient>
+</defs>
+<rect width="403" height="723" fill="#ffffff"/>
+<text x="16" y="26" font-size="15" font-weight="600" fill="#1f2937">货位距离热力图（颜色越绿越靠近出入口）</text>
+<g font-size="10" fill="#a8abb2" font-family="Consolas, monospace">
+<text x="83.0" y="62" text-anchor="middle">A1</text>
+<text x="112.0" y="62" text-anchor="middle">A2</text>
+<text x="141.0" y="62" text-anchor="middle">A3</text>
+<text x="170.0" y="62" text-anchor="middle">A4</text>
+<text x="199.0" y="62" text-anchor="middle">A5</text>
+<text x="228.0" y="62" text-anchor="middle">A6</text>
+<text x="257.0" y="62" text-anchor="middle">A7</text>
+<text x="286.0" y="62" text-anchor="middle">A8</text>
+<text x="315.0" y="62" text-anchor="middle">A9</text>
+<text x="344.0" y="62" text-anchor="middle">A10</text>
+<text x="32" y="87.0" text-anchor="end">1</text>
+<text x="32" y="145.0" text-anchor="end">3</text>
+<text x="32" y="203.0" text-anchor="end">5</text>
+<text x="32" y="261.0" text-anchor="end">7</text>
+<text x="32" y="319.0" text-anchor="end">9</text>
+<text x="32" y="377.0" text-anchor="end">11</text>
+<text x="32" y="435.0" text-anchor="end">13</text>
+<text x="32" y="493.0" text-anchor="end">15</text>
+<text x="32" y="551.0" text-anchor="end">17</text>
+<text x="32" y="609.0" text-anchor="end">19</text>
+</g>
+<rect x="71.0" y="83.0" width="24" height="24" rx="4" fill="hsl(152, 62%, 62%)"><title>A01-01 坐标(1,1) 距离 3.70 米</title></rect>
+<rect x="71.0" y="112.0" width="24" height="24" rx="4" fill="hsl(155, 62%, 61%)"><title>A01-02 坐标(1,2) 距离 4.90 米</title></rect>
+<rect x="71.0" y="141.0" width="24" height="24" rx="4" fill="hsl(158, 62%, 61%)"><title>A01-03 坐标(1,3) 距离 6.10 米</title></rect>
+<rect x="71.0" y="170.0" width="24" height="24" rx="4" fill="hsl(161, 62%, 61%)"><title>A01-04 坐标(1,4) 距离 7.30 米</title></rect>
+<rect x="71.0" y="199.0" width="24" height="24" rx="4" fill="hsl(164, 62%, 60%)"><title>A01-05 坐标(1,5) 距离 8.50 米</title></rect>
+<rect x="71.0" y="228.0" width="24" height="24" rx="4" fill="hsl(167, 63%, 60%)"><title>A01-06 坐标(1,6) 距离 9.70 米</title></rect>
+<rect x="71.0" y="257.0" width="24" height="24" rx="4" fill="hsl(170, 63%, 60%)"><title>A01-07 坐标(1,7) 距离 10.90 米</title></rect>
+<rect x="71.0" y="286.0" width="24" height="24" rx="4" fill="hsl(173, 63%, 59%)"><title>A01-08 坐标(1,8) 距离 12.10 米</title></rect>
+<rect x="71.0" y="315.0" width="24" height="24" rx="4" fill="hsl(176, 63%, 59%)"><title>A01-09 坐标(1,9) 距离 13.30 米</title></rect>
+<rect x="71.0" y="344.0" width="24" height="24" rx="4" fill="hsl(179, 63%, 59%)"><title>A01-10 坐标(1,10) 距离 14.50 米</title></rect>
+<rect x="71.0" y="373.0" width="24" height="24" rx="4" fill="hsl(182, 64%, 58%)"><title>A01-11 坐标(1,11) 距离 15.70 米</title></rect>
+<rect x="71.0" y="402.0" width="24" height="24" rx="4" fill="hsl(185, 64%, 58%)"><title>A01-12 坐标(1,12) 距离 16.90 米</title></rect>
+<rect x="71.0" y="431.0" width="24" height="24" rx="4" fill="hsl(188, 64%, 58%)"><title>A01-13 坐标(1,13) 距离 18.10 米</title></rect>
+<rect x="71.0" y="460.0" width="24" height="24" rx="4" fill="hsl(191, 64%, 57%)"><title>A01-14 坐标(1,14) 距离 19.30 米</title></rect>
+<rect x="71.0" y="489.0" width="24" height="24" rx="4" fill="hsl(195, 64%, 57%)"><title>A01-15 坐标(1,15) 距离 20.50 米</title></rect>
+<rect x="71.0" y="518.0" width="24" height="24" rx="4" fill="hsl(198, 65%, 57%)"><title>A01-16 坐标(1,16) 距离 21.70 米</title></rect>
+<rect x="71.0" y="547.0" width="24" height="24" rx="4" fill="hsl(201, 65%, 56%)"><title>A01-17 坐标(1,17) 距离 22.90 米</title></rect>
+<rect x="71.0" y="576.0" width="24" height="24" rx="4" fill="hsl(204, 65%, 56%)"><title>A01-18 坐标(1,18) 距离 24.10 米</title></rect>
+<rect x="71.0" y="605.0" width="24" height="24" rx="4" fill="hsl(207, 65%, 56%)"><title>A01-19 坐标(1,19) 距离 25.30 米</title></rect>
+<rect x="71.0" y="634.0" width="24" height="24" rx="4" fill="hsl(211, 66%, 55%)"><title>A01-20 坐标(1,20) 距离 26.50 米</title></rect>
+<rect x="100.0" y="83.0" width="24" height="24" rx="4" fill="hsl(158, 62%, 61%)"><title>A02-01 坐标(2,1) 距离 6.20 米</title></rect>
+<rect x="100.0" y="112.0" width="24" height="24" rx="4" fill="hsl(161, 62%, 61%)"><title>A02-02 坐标(2,2) 距离 7.40 米</title></rect>
+<rect x="100.0" y="141.0" width="24" height="24" rx="4" fill="hsl(164, 62%, 60%)"><title>A02-03 坐标(2,3) 距离 8.60 米</title></rect>
+<rect x="100.0" y="170.0" width="24" height="24" rx="4" fill="hsl(167, 63%, 60%)"><title>A02-04 坐标(2,4) 距离 9.80 米</title></rect>
+<rect x="100.0" y="199.0" width="24" height="24" rx="4" fill="hsl(170, 63%, 60%)"><title>A02-05 坐标(2,5) 距离 11.00 米</title></rect>
+<rect x="100.0" y="228.0" width="24" height="24" rx="4" fill="hsl(173, 63%, 59%)"><title>A02-06 坐标(2,6) 距离 12.20 米</title></rect>
+<rect x="100.0" y="257.0" width="24" height="24" rx="4" fill="hsl(176, 63%, 59%)"><title>A02-07 坐标(2,7) 距离 13.40 米</title></rect>
+<rect x="100.0" y="286.0" width="24" height="24" rx="4" fill="hsl(179, 63%, 59%)"><title>A02-08 坐标(2,8) 距离 14.60 米</title></rect>
+<rect x="100.0" y="315.0" width="24" height="24" rx="4" fill="hsl(182, 64%, 58%)"><title>A02-09 坐标(2,9) 距离 15.80 米</title></rect>
+<rect x="100.0" y="344.0" width="24" height="24" rx="4" fill="hsl(186, 64%, 58%)"><title>A02-10 坐标(2,10) 距离 17.00 米</title></rect>
+<rect x="100.0" y="373.0" width="24" height="24" rx="4" fill="hsl(189, 64%, 58%)"><title>A02-11 坐标(2,11) 距离 18.20 米</title></rect>
+<rect x="100.0" y="402.0" width="24" height="24" rx="4" fill="hsl(192, 64%, 57%)"><title>A02-12 坐标(2,12) 距离 19.40 米</title></rect>
+<rect x="100.0" y="431.0" width="24" height="24" rx="4" fill="hsl(195, 64%, 57%)"><title>A02-13 坐标(2,13) 距离 20.60 米</title></rect>
+<rect x="100.0" y="460.0" width="24" height="24" rx="4" fill="hsl(198, 65%, 57%)"><title>A02-14 坐标(2,14) 距离 21.80 米</title></rect>
+<rect x="100.0" y="489.0" width="24" height="24" rx="4" fill="hsl(201, 65%, 56%)"><title>A02-15 坐标(2,15) 距离 23.00 米</title></rect>
+<rect x="100.0" y="518.0" width="24" height="24" rx="4" fill="hsl(204, 65%, 56%)"><title>A02-16 坐标(2,16) 距离 24.20 米</title></rect>
+<rect x="100.0" y="547.0" width="24" height="24" rx="4" fill="hsl(207, 65%, 56%)"><title>A02-17 坐标(2,17) 距离 25.40 米</title></rect>
+<rect x="100.0" y="576.0" width="24" height="24" rx="4" fill="hsl(211, 66%, 55%)"><title>A02-18 坐标(2,18) 距离 26.60 米</title></rect>
+<rect x="100.0" y="605.0" width="24" height="24" rx="4" fill="hsl(221, 66%, 55%)"><title>A02-19 坐标(2,19) 距离 27.80 米</title></rect>
+<rect x="100.0" y="634.0" width="24" height="24" rx="4" fill="hsl(231, 66%, 55%)"><title>A02-20 坐标(2,20) 距离 29.00 米</title></rect>
+<rect x="129.0" y="83.0" width="24" height="24" rx="4" fill="hsl(164, 62%, 60%)"><title>A03-01 坐标(3,1) 距离 8.70 米</title></rect>
+<rect x="129.0" y="112.0" width="24" height="24" rx="4" fill="hsl(167, 63%, 60%)"><title>A03-02 坐标(3,2) 距离 9.90 米</title></rect>
+<rect x="129.0" y="141.0" width="24" height="24" rx="4" fill="hsl(170, 63%, 60%)"><title>A03-03 坐标(3,3) 距离 11.10 米</title></rect>
+<rect x="129.0" y="170.0" width="24" height="24" rx="4" fill="hsl(174, 63%, 59%)"><title>A03-04 坐标(3,4) 距离 12.30 米</title></rect>
+<rect x="129.0" y="199.0" width="24" height="24" rx="4" fill="hsl(177, 63%, 59%)"><title>A03-05 坐标(3,5) 距离 13.50 米</title></rect>
+<rect x="129.0" y="228.0" width="24" height="24" rx="4" fill="hsl(180, 63%, 59%)"><title>A03-06 坐标(3,6) 距离 14.70 米</title></rect>
+<rect x="129.0" y="257.0" width="24" height="24" rx="4" fill="hsl(183, 64%, 58%)"><title>A03-07 坐标(3,7) 距离 15.90 米</title></rect>
+<rect x="129.0" y="286.0" width="24" height="24" rx="4" fill="hsl(186, 64%, 58%)"><title>A03-08 坐标(3,8) 距离 17.10 米</title></rect>
+<rect x="129.0" y="315.0" width="24" height="24" rx="4" fill="hsl(189, 64%, 58%)"><title>A03-09 坐标(3,9) 距离 18.30 米</title></rect>
+<rect x="129.0" y="344.0" width="24" height="24" rx="4" fill="hsl(192, 64%, 57%)"><title>A03-10 坐标(3,10) 距离 19.50 米</title></rect>
+<rect x="129.0" y="373.0" width="24" height="24" rx="4" fill="hsl(195, 65%, 57%)"><title>A03-11 坐标(3,11) 距离 20.70 米</title></rect>
+<rect x="129.0" y="402.0" width="24" height="24" rx="4" fill="hsl(198, 65%, 57%)"><title>A03-12 坐标(3,12) 距离 21.90 米</title></rect>
+<rect x="129.0" y="431.0" width="24" height="24" rx="4" fill="hsl(201, 65%, 56%)"><title>A03-13 坐标(3,13) 距离 23.10 米</title></rect>
+<rect x="129.0" y="460.0" width="24" height="24" rx="4" fill="hsl(204, 65%, 56%)"><title>A03-14 坐标(3,14) 距离 24.30 米</title></rect>
+<rect x="129.0" y="489.0" width="24" height="24" rx="4" fill="hsl(207, 65%, 56%)"><title>A03-15 坐标(3,15) 距离 25.50 米</title></rect>
+<rect x="129.0" y="518.0" width="24" height="24" rx="4" fill="hsl(212, 66%, 55%)"><title>A03-16 坐标(3,16) 距离 26.70 米</title></rect>
+<rect x="129.0" y="547.0" width="24" height="24" rx="4" fill="hsl(222, 66%, 55%)"><title>A03-17 坐标(3,17) 距离 27.90 米</title></rect>
+<rect x="129.0" y="576.0" width="24" height="24" rx="4" fill="hsl(231, 66%, 55%)"><title>A03-18 坐标(3,18) 距离 29.10 米</title></rect>
+<rect x="129.0" y="605.0" width="24" height="24" rx="4" fill="hsl(241, 66%, 54%)"><title>A03-19 坐标(3,19) 距离 30.30 米</title></rect>
+<rect x="129.0" y="634.0" width="24" height="24" rx="4" fill="hsl(250, 66%, 54%)"><title>A03-20 坐标(3,20) 距离 31.50 米</title></rect>
+<rect x="158.0" y="83.0" width="24" height="24" rx="4" fill="hsl(171, 63%, 60%)"><title>A04-01 坐标(4,1) 距离 11.20 米</title></rect>
+<rect x="158.0" y="112.0" width="24" height="24" rx="4" fill="hsl(174, 63%, 59%)"><title>A04-02 坐标(4,2) 距离 12.40 米</title></rect>
+<rect x="158.0" y="141.0" width="24" height="24" rx="4" fill="hsl(177, 63%, 59%)"><title>A04-03 坐标(4,3) 距离 13.60 米</title></rect>
+<rect x="158.0" y="170.0" width="24" height="24" rx="4" fill="hsl(180, 63%, 59%)"><title>A04-04 坐标(4,4) 距离 14.80 米</title></rect>
+<rect x="158.0" y="199.0" width="24" height="24" rx="4" fill="hsl(183, 64%, 58%)"><title>A04-05 坐标(4,5) 距离 16.00 米</title></rect>
+<rect x="158.0" y="228.0" width="24" height="24" rx="4" fill="hsl(186, 64%, 58%)"><title>A04-06 坐标(4,6) 距离 17.20 米</title></rect>
+<rect x="158.0" y="257.0" width="24" height="24" rx="4" fill="hsl(189, 64%, 58%)"><title>A04-07 坐标(4,7) 距离 18.40 米</title></rect>
+<rect x="158.0" y="286.0" width="24" height="24" rx="4" fill="hsl(192, 64%, 57%)"><title>A04-08 坐标(4,8) 距离 19.60 米</title></rect>
+<rect x="158.0" y="315.0" width="24" height="24" rx="4" fill="hsl(195, 65%, 57%)"><title>A04-09 坐标(4,9) 距离 20.80 米</title></rect>
+<rect x="158.0" y="344.0" width="24" height="24" rx="4" fill="hsl(198, 65%, 57%)"><title>A04-10 坐标(4,10) 距离 22.00 米</title></rect>
+<rect x="158.0" y="373.0" width="24" height="24" rx="4" fill="hsl(201, 65%, 56%)"><title>A04-11 坐标(4,11) 距离 23.20 米</title></rect>
+<rect x="158.0" y="402.0" width="24" height="24" rx="4" fill="hsl(205, 65%, 56%)"><title>A04-12 坐标(4,12) 距离 24.40 米</title></rect>
+<rect x="158.0" y="431.0" width="24" height="24" rx="4" fill="hsl(208, 65%, 56%)"><title>A04-13 坐标(4,13) 距离 25.60 米</title></rect>
+<rect x="158.0" y="460.0" width="24" height="24" rx="4" fill="hsl(213, 66%, 55%)"><title>A04-14 坐标(4,14) 距离 26.80 米</title></rect>
+<rect x="158.0" y="489.0" width="24" height="24" rx="4" fill="hsl(223, 66%, 55%)"><title>A04-15 坐标(4,15) 距离 28.00 米</title></rect>
+<rect x="158.0" y="518.0" width="24" height="24" rx="4" fill="hsl(232, 66%, 55%)"><title>A04-16 坐标(4,16) 距离 29.20 米</title></rect>
+<rect x="158.0" y="547.0" width="24" height="24" rx="4" fill="hsl(242, 66%, 54%)"><title>A04-17 坐标(4,17) 距离 30.40 米</title></rect>
+<rect x="158.0" y="576.0" width="24" height="24" rx="4" fill="hsl(251, 66%, 54%)"><title>A04-18 坐标(4,18) 距离 31.60 米</title></rect>
+<rect x="158.0" y="605.0" width="24" height="24" rx="4" fill="hsl(261, 67%, 54%)"><title>A04-19 坐标(4,19) 距离 32.80 米</title></rect>
+<rect x="158.0" y="634.0" width="24" height="24" rx="4" fill="hsl(270, 67%, 53%)"><title>A04-20 坐标(4,20) 距离 34.00 米</title></rect>
+<rect x="187.0" y="83.0" width="24" height="24" rx="4" fill="hsl(177, 63%, 59%)"><title>A05-01 坐标(5,1) 距离 13.70 米</title></rect>
+<rect x="187.0" y="112.0" width="24" height="24" rx="4" fill="hsl(180, 63%, 59%)"><title>A05-02 坐标(5,2) 距离 14.90 米</title></rect>
+<rect x="187.0" y="141.0" width="24" height="24" rx="4" fill="hsl(183, 64%, 58%)"><title>A05-03 坐标(5,3) 距离 16.10 米</title></rect>
+<rect x="187.0" y="170.0" width="24" height="24" rx="4" fill="hsl(186, 64%, 58%)"><title>A05-04 坐标(5,4) 距离 17.30 米</title></rect>
+<rect x="187.0" y="199.0" width="24" height="24" rx="4" fill="hsl(189, 64%, 58%)"><title>A05-05 坐标(5,5) 距离 18.50 米</title></rect>
+<rect x="187.0" y="228.0" width="24" height="24" rx="4" fill="hsl(192, 64%, 57%)"><title>A05-06 坐标(5,6) 距离 19.70 米</title></rect>
+<rect x="187.0" y="257.0" width="24" height="24" rx="4" fill="hsl(196, 65%, 57%)"><title>A05-07 坐标(5,7) 距离 20.90 米</title></rect>
+<rect x="187.0" y="286.0" width="24" height="24" rx="4" fill="hsl(199, 65%, 57%)"><title>A05-08 坐标(5,8) 距离 22.10 米</title></rect>
+<rect x="187.0" y="315.0" width="24" height="24" rx="4" fill="hsl(202, 65%, 56%)"><title>A05-09 坐标(5,9) 距离 23.30 米</title></rect>
+<rect x="187.0" y="344.0" width="24" height="24" rx="4" fill="hsl(205, 65%, 56%)"><title>A05-10 坐标(5,10) 距离 24.50 米</title></rect>
+<rect x="187.0" y="373.0" width="24" height="24" rx="4" fill="hsl(208, 65%, 56%)"><title>A05-11 坐标(5,11) 距离 25.70 米</title></rect>
+<rect x="187.0" y="402.0" width="24" height="24" rx="4" fill="hsl(214, 66%, 55%)"><title>A05-12 坐标(5,12) 距离 26.90 米</title></rect>
+<rect x="187.0" y="431.0" width="24" height="24" rx="4" fill="hsl(223, 66%, 55%)"><title>A05-13 坐标(5,13) 距离 28.10 米</title></rect>
+<rect x="187.0" y="460.0" width="24" height="24" rx="4" fill="hsl(233, 66%, 55%)"><title>A05-14 坐标(5,14) 距离 29.30 米</title></rect>
+<rect x="187.0" y="489.0" width="24" height="24" rx="4" fill="hsl(242, 66%, 54%)"><title>A05-15 坐标(5,15) 距离 30.50 米</title></rect>
+<rect x="187.0" y="518.0" width="24" height="24" rx="4" fill="hsl(252, 66%, 54%)"><title>A05-16 坐标(5,16) 距离 31.70 米</title></rect>
+<rect x="187.0" y="547.0" width="24" height="24" rx="4" fill="hsl(262, 67%, 54%)"><title>A05-17 坐标(5,17) 距离 32.90 米</title></rect>
+<rect x="187.0" y="576.0" width="24" height="24" rx="4" fill="hsl(271, 67%, 53%)"><title>A05-18 坐标(5,18) 距离 34.10 米</title></rect>
+<rect x="187.0" y="605.0" width="24" height="24" rx="4" fill="hsl(281, 67%, 53%)"><title>A05-19 坐标(5,19) 距离 35.30 米</title></rect>
+<rect x="187.0" y="634.0" width="24" height="24" rx="4" fill="hsl(290, 67%, 53%)"><title>A05-20 坐标(5,20) 距离 36.50 米</title></rect>
+<rect x="216.0" y="83.0" width="24" height="24" rx="4" fill="hsl(184, 64%, 58%)"><title>A06-01 坐标(6,1) 距离 16.20 米</title></rect>
+<rect x="216.0" y="112.0" width="24" height="24" rx="4" fill="hsl(187, 64%, 58%)"><title>A06-02 坐标(6,2) 距离 17.40 米</title></rect>
+<rect x="216.0" y="141.0" width="24" height="24" rx="4" fill="hsl(190, 64%, 58%)"><title>A06-03 坐标(6,3) 距离 18.60 米</title></rect>
+<rect x="216.0" y="170.0" width="24" height="24" rx="4" fill="hsl(193, 64%, 57%)"><title>A06-04 坐标(6,4) 距离 19.80 米</title></rect>
+<rect x="216.0" y="199.0" width="24" height="24" rx="4" fill="hsl(196, 65%, 57%)"><title>A06-05 坐标(6,5) 距离 21.00 米</title></rect>
+<rect x="216.0" y="228.0" width="24" height="24" rx="4" fill="hsl(199, 65%, 57%)"><title>A06-06 坐标(6,6) 距离 22.20 米</title></rect>
+<rect x="216.0" y="257.0" width="24" height="24" rx="4" fill="hsl(202, 65%, 56%)"><title>A06-07 坐标(6,7) 距离 23.40 米</title></rect>
+<rect x="216.0" y="286.0" width="24" height="24" rx="4" fill="hsl(205, 65%, 56%)"><title>A06-08 坐标(6,8) 距离 24.60 米</title></rect>
+<rect x="216.0" y="315.0" width="24" height="24" rx="4" fill="hsl(208, 65%, 56%)"><title>A06-09 坐标(6,9) 距离 25.80 米</title></rect>
+<rect x="216.0" y="344.0" width="24" height="24" rx="4" fill="hsl(215, 66%, 55%)"><title>A06-10 坐标(6,10) 距离 27.00 米</title></rect>
+<rect x="216.0" y="373.0" width="24" height="24" rx="4" fill="hsl(224, 66%, 55%)"><title>A06-11 坐标(6,11) 距离 28.20 米</title></rect>
+<rect x="216.0" y="402.0" width="24" height="24" rx="4" fill="hsl(234, 66%, 55%)"><title>A06-12 坐标(6,12) 距离 29.40 米</title></rect>
+<rect x="216.0" y="431.0" width="24" height="24" rx="4" fill="hsl(243, 66%, 54%)"><title>A06-13 坐标(6,13) 距离 30.60 米</title></rect>
+<rect x="216.0" y="460.0" width="24" height="24" rx="4" fill="hsl(253, 66%, 54%)"><title>A06-14 坐标(6,14) 距离 31.80 米</title></rect>
+<rect x="216.0" y="489.0" width="24" height="24" rx="4" fill="hsl(262, 67%, 54%)"><title>A06-15 坐标(6,15) 距离 33.00 米</title></rect>
+<rect x="216.0" y="518.0" width="24" height="24" rx="4" fill="hsl(272, 67%, 53%)"><title>A06-16 坐标(6,16) 距离 34.20 米</title></rect>
+<rect x="216.0" y="547.0" width="24" height="24" rx="4" fill="hsl(281, 67%, 53%)"><title>A06-17 坐标(6,17) 距离 35.40 米</title></rect>
+<rect x="216.0" y="576.0" width="24" height="24" rx="4" fill="hsl(291, 67%, 53%)"><title>A06-18 坐标(6,18) 距离 36.60 米</title></rect>
+<rect x="216.0" y="605.0" width="24" height="24" rx="4" fill="hsl(300, 68%, 52%)"><title>A06-19 坐标(6,19) 距离 37.80 米</title></rect>
+<rect x="216.0" y="634.0" width="24" height="24" rx="4" fill="hsl(310, 68%, 52%)"><title>A06-20 坐标(6,20) 距离 39.00 米</title></rect>
+<rect x="245.0" y="83.0" width="24" height="24" rx="4" fill="hsl(190, 64%, 58%)"><title>A07-01 坐标(7,1) 距离 18.70 米</title></rect>
+<rect x="245.0" y="112.0" width="24" height="24" rx="4" fill="hsl(193, 64%, 57%)"><title>A07-02 坐标(7,2) 距离 19.90 米</title></rect>
+<rect x="245.0" y="141.0" width="24" height="24" rx="4" fill="hsl(196, 65%, 57%)"><title>A07-03 坐标(7,3) 距离 21.10 米</title></rect>
+<rect x="245.0" y="170.0" width="24" height="24" rx="4" fill="hsl(199, 65%, 57%)"><title>A07-04 坐标(7,4) 距离 22.30 米</title></rect>
+<rect x="245.0" y="199.0" width="24" height="24" rx="4" fill="hsl(202, 65%, 56%)"><title>A07-05 坐标(7,5) 距离 23.50 米</title></rect>
+<rect x="245.0" y="228.0" width="24" height="24" rx="4" fill="hsl(205, 65%, 56%)"><title>A07-06 坐标(7,6) 距离 24.70 米</title></rect>
+<rect x="245.0" y="257.0" width="24" height="24" rx="4" fill="hsl(208, 65%, 56%)"><title>A07-07 坐标(7,7) 距离 25.90 米</title></rect>
+<rect x="245.0" y="286.0" width="24" height="24" rx="4" fill="hsl(215, 66%, 55%)"><title>A07-08 坐标(7,8) 距离 27.10 米</title></rect>
+<rect x="245.0" y="315.0" width="24" height="24" rx="4" fill="hsl(225, 66%, 55%)"><title>A07-09 坐标(7,9) 距离 28.30 米</title></rect>
+<rect x="245.0" y="344.0" width="24" height="24" rx="4" fill="hsl(235, 66%, 55%)"><title>A07-10 坐标(7,10) 距离 29.50 米</title></rect>
+<rect x="245.0" y="373.0" width="24" height="24" rx="4" fill="hsl(244, 66%, 54%)"><title>A07-11 坐标(7,11) 距离 30.70 米</title></rect>
+<rect x="245.0" y="402.0" width="24" height="24" rx="4" fill="hsl(254, 66%, 54%)"><title>A07-12 坐标(7,12) 距离 31.90 米</title></rect>
+<rect x="245.0" y="431.0" width="24" height="24" rx="4" fill="hsl(263, 67%, 54%)"><title>A07-13 坐标(7,13) 距离 33.10 米</title></rect>
+<rect x="245.0" y="460.0" width="24" height="24" rx="4" fill="hsl(273, 67%, 53%)"><title>A07-14 坐标(7,14) 距离 34.30 米</title></rect>
+<rect x="245.0" y="489.0" width="24" height="24" rx="4" fill="hsl(282, 67%, 53%)"><title>A07-15 坐标(7,15) 距离 35.50 米</title></rect>
+<rect x="245.0" y="518.0" width="24" height="24" rx="4" fill="hsl(292, 67%, 53%)"><title>A07-16 坐标(7,16) 距离 36.70 米</title></rect>
+<rect x="245.0" y="547.0" width="24" height="24" rx="4" fill="hsl(301, 68%, 52%)"><title>A07-17 坐标(7,17) 距离 37.90 米</title></rect>
+<rect x="245.0" y="576.0" width="24" height="24" rx="4" fill="hsl(311, 68%, 52%)"><title>A07-18 坐标(7,18) 距离 39.10 米</title></rect>
+<rect x="245.0" y="605.0" width="24" height="24" rx="4" fill="hsl(320, 68%, 52%)"><title>A07-19 坐标(7,19) 距离 40.30 米</title></rect>
+<rect x="245.0" y="634.0" width="24" height="24" rx="4" fill="hsl(330, 68%, 51%)"><title>A07-20 坐标(7,20) 距离 41.50 米</title></rect>
+<rect x="274.0" y="83.0" width="24" height="24" rx="4" fill="hsl(196, 65%, 57%)"><title>A08-01 坐标(8,1) 距离 21.20 米</title></rect>
+<rect x="274.0" y="112.0" width="24" height="24" rx="4" fill="hsl(199, 65%, 57%)"><title>A08-02 坐标(8,2) 距离 22.40 米</title></rect>
+<rect x="274.0" y="141.0" width="24" height="24" rx="4" fill="hsl(202, 65%, 56%)"><title>A08-03 坐标(8,3) 距离 23.60 米</title></rect>
+<rect x="274.0" y="170.0" width="24" height="24" rx="4" fill="hsl(206, 65%, 56%)"><title>A08-04 坐标(8,4) 距离 24.80 米</title></rect>
+<rect x="274.0" y="199.0" width="24" height="24" rx="4" fill="hsl(209, 65%, 56%)"><title>A08-05 坐标(8,5) 距离 26.00 米</title></rect>
+<rect x="274.0" y="228.0" width="24" height="24" rx="4" fill="hsl(216, 66%, 55%)"><title>A08-06 坐标(8,6) 距离 27.20 米</title></rect>
+<rect x="274.0" y="257.0" width="24" height="24" rx="4" fill="hsl(226, 66%, 55%)"><title>A08-07 坐标(8,7) 距离 28.40 米</title></rect>
+<rect x="274.0" y="286.0" width="24" height="24" rx="4" fill="hsl(235, 66%, 55%)"><title>A08-08 坐标(8,8) 距离 29.60 米</title></rect>
+<rect x="274.0" y="315.0" width="24" height="24" rx="4" fill="hsl(245, 66%, 54%)"><title>A08-09 坐标(8,9) 距离 30.80 米</title></rect>
+<rect x="274.0" y="344.0" width="24" height="24" rx="4" fill="hsl(254, 66%, 54%)"><title>A08-10 坐标(8,10) 距离 32.00 米</title></rect>
+<rect x="274.0" y="373.0" width="24" height="24" rx="4" fill="hsl(264, 67%, 54%)"><title>A08-11 坐标(8,11) 距离 33.20 米</title></rect>
+<rect x="274.0" y="402.0" width="24" height="24" rx="4" fill="hsl(273, 67%, 53%)"><title>A08-12 坐标(8,12) 距离 34.40 米</title></rect>
+<rect x="274.0" y="431.0" width="24" height="24" rx="4" fill="hsl(283, 67%, 53%)"><title>A08-13 坐标(8,13) 距离 35.60 米</title></rect>
+<rect x="274.0" y="460.0" width="24" height="24" rx="4" fill="hsl(293, 67%, 53%)"><title>A08-14 坐标(8,14) 距离 36.80 米</title></rect>
+<rect x="274.0" y="489.0" width="24" height="24" rx="4" fill="hsl(302, 68%, 52%)"><title>A08-15 坐标(8,15) 距离 38.00 米</title></rect>
+<rect x="274.0" y="518.0" width="24" height="24" rx="4" fill="hsl(312, 68%, 52%)"><title>A08-16 坐标(8,16) 距离 39.20 米</title></rect>
+<rect x="274.0" y="547.0" width="24" height="24" rx="4" fill="hsl(321, 68%, 52%)"><title>A08-17 坐标(8,17) 距离 40.40 米</title></rect>
+<rect x="274.0" y="576.0" width="24" height="24" rx="4" fill="hsl(331, 68%, 51%)"><title>A08-18 坐标(8,18) 距离 41.60 米</title></rect>
+<rect x="274.0" y="605.0" width="24" height="24" rx="4" fill="hsl(340, 68%, 51%)"><title>A08-19 坐标(8,19) 距离 42.80 米</title></rect>
+<rect x="274.0" y="634.0" width="24" height="24" rx="4" fill="hsl(350, 69%, 51%)"><title>A08-20 坐标(8,20) 距离 44.00 米</title></rect>
+<rect x="303.0" y="83.0" width="24" height="24" rx="4" fill="hsl(203, 65%, 56%)"><title>A09-01 坐标(9,1) 距离 23.70 米</title></rect>
+<rect x="303.0" y="112.0" width="24" height="24" rx="4" fill="hsl(206, 65%, 56%)"><title>A09-02 坐标(9,2) 距离 24.90 米</title></rect>
+<rect x="303.0" y="141.0" width="24" height="24" rx="4" fill="hsl(209, 65%, 56%)"><title>A09-03 坐标(9,3) 距离 26.10 米</title></rect>
+<rect x="303.0" y="170.0" width="24" height="24" rx="4" fill="hsl(217, 66%, 55%)"><title>A09-04 坐标(9,4) 距离 27.30 米</title></rect>
+<rect x="303.0" y="199.0" width="24" height="24" rx="4" fill="hsl(227, 66%, 55%)"><title>A09-05 坐标(9,5) 距离 28.50 米</title></rect>
+<rect x="303.0" y="228.0" width="24" height="24" rx="4" fill="hsl(236, 66%, 55%)"><title>A09-06 坐标(9,6) 距离 29.70 米</title></rect>
+<rect x="303.0" y="257.0" width="24" height="24" rx="4" fill="hsl(246, 66%, 54%)"><title>A09-07 坐标(9,7) 距离 30.90 米</title></rect>
+<rect x="303.0" y="286.0" width="24" height="24" rx="4" fill="hsl(255, 67%, 54%)"><title>A09-08 坐标(9,8) 距离 32.10 米</title></rect>
+<rect x="303.0" y="315.0" width="24" height="24" rx="4" fill="hsl(265, 67%, 54%)"><title>A09-09 坐标(9,9) 距离 33.30 米</title></rect>
+<rect x="303.0" y="344.0" width="24" height="24" rx="4" fill="hsl(274, 67%, 53%)"><title>A09-10 坐标(9,10) 距离 34.50 米</title></rect>
+<rect x="303.0" y="373.0" width="24" height="24" rx="4" fill="hsl(284, 67%, 53%)"><title>A09-11 坐标(9,11) 距离 35.70 米</title></rect>
+<rect x="303.0" y="402.0" width="24" height="24" rx="4" fill="hsl(293, 67%, 53%)"><title>A09-12 坐标(9,12) 距离 36.90 米</title></rect>
+<rect x="303.0" y="431.0" width="24" height="24" rx="4" fill="hsl(303, 68%, 52%)"><title>A09-13 坐标(9,13) 距离 38.10 米</title></rect>
+<rect x="303.0" y="460.0" width="24" height="24" rx="4" fill="hsl(312, 68%, 52%)"><title>A09-14 坐标(9,14) 距离 39.30 米</title></rect>
+<rect x="303.0" y="489.0" width="24" height="24" rx="4" fill="hsl(322, 68%, 52%)"><title>A09-15 坐标(9,15) 距离 40.50 米</title></rect>
+<rect x="303.0" y="518.0" width="24" height="24" rx="4" fill="hsl(331, 68%, 51%)"><title>A09-16 坐标(9,16) 距离 41.70 米</title></rect>
+<rect x="303.0" y="547.0" width="24" height="24" rx="4" fill="hsl(341, 68%, 51%)"><title>A09-17 坐标(9,17) 距离 42.90 米</title></rect>
+<rect x="303.0" y="576.0" width="24" height="24" rx="4" fill="hsl(351, 69%, 51%)"><title>A09-18 坐标(9,18) 距离 44.10 米</title></rect>
+<rect x="303.0" y="605.0" width="24" height="24" rx="4" fill="hsl(0, 69%, 50%)"><title>A09-19 坐标(9,19) 距离 45.30 米</title></rect>
+<rect x="303.0" y="634.0" width="24" height="24" rx="4" fill="hsl(10, 69%, 50%)"><title>A09-20 坐标(9,20) 距离 46.50 米</title></rect>
+<rect x="332.0" y="83.0" width="24" height="24" rx="4" fill="hsl(209, 65%, 56%)"><title>A10-01 坐标(10,1) 距离 26.20 米</title></rect>
+<rect x="332.0" y="112.0" width="24" height="24" rx="4" fill="hsl(218, 66%, 55%)"><title>A10-02 坐标(10,2) 距离 27.40 米</title></rect>
+<rect x="332.0" y="141.0" width="24" height="24" rx="4" fill="hsl(227, 66%, 55%)"><title>A10-03 坐标(10,3) 距离 28.60 米</title></rect>
+<rect x="332.0" y="170.0" width="24" height="24" rx="4" fill="hsl(237, 66%, 55%)"><title>A10-04 坐标(10,4) 距离 29.80 米</title></rect>
+<rect x="332.0" y="199.0" width="24" height="24" rx="4" fill="hsl(246, 66%, 54%)"><title>A10-05 坐标(10,5) 距离 31.00 米</title></rect>
+<rect x="332.0" y="228.0" width="24" height="24" rx="4" fill="hsl(256, 67%, 54%)"><title>A10-06 坐标(10,6) 距离 32.20 米</title></rect>
+<rect x="332.0" y="257.0" width="24" height="24" rx="4" fill="hsl(266, 67%, 54%)"><title>A10-07 坐标(10,7) 距离 33.40 米</title></rect>
+<rect x="332.0" y="286.0" width="24" height="24" rx="4" fill="hsl(275, 67%, 53%)"><title>A10-08 坐标(10,8) 距离 34.60 米</title></rect>
+<rect x="332.0" y="315.0" width="24" height="24" rx="4" fill="hsl(285, 67%, 53%)"><title>A10-09 坐标(10,9) 距离 35.80 米</title></rect>
+<rect x="332.0" y="344.0" width="24" height="24" rx="4" fill="hsl(294, 67%, 53%)"><title>A10-10 坐标(10,10) 距离 37.00 米</title></rect>
+<rect x="332.0" y="373.0" width="24" height="24" rx="4" fill="hsl(304, 68%, 52%)"><title>A10-11 坐标(10,11) 距离 38.20 米</title></rect>
+<rect x="332.0" y="402.0" width="24" height="24" rx="4" fill="hsl(313, 68%, 52%)"><title>A10-12 坐标(10,12) 距离 39.40 米</title></rect>
+<rect x="332.0" y="431.0" width="24" height="24" rx="4" fill="hsl(323, 68%, 52%)"><title>A10-13 坐标(10,13) 距离 40.60 米</title></rect>
+<rect x="332.0" y="460.0" width="24" height="24" rx="4" fill="hsl(332, 68%, 51%)"><title>A10-14 坐标(10,14) 距离 41.80 米</title></rect>
+<rect x="332.0" y="489.0" width="24" height="24" rx="4" fill="hsl(342, 68%, 51%)"><title>A10-15 坐标(10,15) 距离 43.00 米</title></rect>
+<rect x="332.0" y="518.0" width="24" height="24" rx="4" fill="hsl(351, 69%, 51%)"><title>A10-16 坐标(10,16) 距离 44.20 米</title></rect>
+<rect x="332.0" y="547.0" width="24" height="24" rx="4" fill="hsl(1, 69%, 50%)"><title>A10-17 坐标(10,17) 距离 45.40 米</title></rect>
+<rect x="332.0" y="576.0" width="24" height="24" rx="4" fill="hsl(10, 69%, 50%)"><title>A10-18 坐标(10,18) 距离 46.60 米</title></rect>
+<rect x="332.0" y="605.0" width="24" height="24" rx="4" fill="hsl(20, 69%, 50%)"><title>A10-19 坐标(10,19) 距离 47.80 米</title></rect>
+<rect x="332.0" y="634.0" width="24" height="24" rx="4" fill="hsl(30, 70%, 50%)"><title>A10-20 坐标(10,20) 距离 49.00 米</title></rect>
+<rect x="42.0" y="54.0" width="24" height="24" rx="5" fill="#1f2937"/>
+<text x="54.0" y="69.0" text-anchor="middle" font-size="9" font-weight="700" fill="#ffffff" font-family="Consolas, monospace">I/O</text>
+<text x="16" y="709" font-size="11" fill="#909399">距出入口：近</text>
+<rect x="118" y="700" width="22" height="11" rx="2" fill="hsl(152, 62%, 62%)"/>
+<rect x="142" y="700" width="22" height="11" rx="2" fill="hsl(181, 64%, 59%)"/>
+<rect x="166" y="700" width="22" height="11" rx="2" fill="hsl(210, 66%, 56%)"/>
+<rect x="190" y="700" width="22" height="11" rx="2" fill="hsl(299, 68%, 53%)"/>
+<rect x="214" y="700" width="22" height="11" rx="2" fill="hsl(30, 70%, 50%)"/>
+<text x="242" y="709" font-size="11" fill="#909399">远（49.0 米）</text>
+<text x="273" y="709" font-size="11" fill="#606266">货位总数 200 个</text>
+</svg>
