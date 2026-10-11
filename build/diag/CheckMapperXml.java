@@ -6,20 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 结构审查工具：检查 MyBatis 注解 SQL 的 XML 合法性。
+ * 结构审查工具：检查 MyBatis 注解 SQL 的两类陷阱。
  *
- * <p>背景：{@code @Select/@Update} 等注解若以 {@code <script>} 开头，MyBatis 会按 XML 解析。
- * 因此 SQL 中出现裸的小于号（例如 {@code <=}）会导致应用启动失败，报
- * “元素内容必须由格式正确的字符数据或标记组成”。此外 {@code <if test='...'>} 内部
- * 若因字符串拼接把换行与缩进带入标签，也会触发同一错误。</p>
+ * <p><b>陷阱一（会让应用启动就失败）</b>：{@code @Select/@Update} 等注解若以
+ * {@code <script>} 开头，MyBatis 会按 XML 解析。此时 SQL 中裸写的小于号
+ * （例如 {@code <=}）是非法 XML 字符，报“元素内容必须由格式正确的字符数据或标记组成”。
+ * 必须写成 {@code &lt;=}。</p>
+ *
+ * <p><b>陷阱二（会让接口 500）</b>：反过来，<b>不带</b> {@code <script>} 的普通 SQL 注解
+ * 不做 XML 解析，其中的 {@code &lt;} 会被原样发给数据库，直接造成 SQL 语法错误。
+ * 这是陷阱一的镜像，两者必须同时检查。</p>
  *
  * <p>实现说明：这些注解的保留级别是 {@code CLASS}，反射（{@code getAnnotations()}）读不到，
- * 因此本工具直接解析 class 文件的常量池，取出全部 UTF-8 常量，对以
- * {@code <script>} 开头的字符串做 XML 语法校验。</p>
+ * 因此本工具直接解析 class 文件的常量池。解析时必须<b>严格按 JVMS 常量类型表跳过负载</b>，
+ * 任何长度错误都会导致偏移错位、后续常量全部读错（表现为“0 条语句”）。</p>
  *
  * <p>用法：{@code java CheckMapperXml <classes 目录>}</p>
  */
 public class CheckMapperXml {
+
+    /** 普通注解中不允许出现的 XML 实体（会被原样发往数据库） */
+    private static final String[] XML_ENTITIES = {"&lt;", "&gt;", "&amp;", "&quot;", "&apos;"};
 
     public static void main(String[] args) throws Exception {
         String dir = args.length > 0 ? args[0] : "D:/DeepSeekXM/XM01/03-源码/backend/target/classes";
@@ -45,18 +52,44 @@ public class CheckMapperXml {
         }
         java.util.Arrays.sort(classFiles);
 
-        int classCount = 0;
         int scriptCount = 0;
+        int plainCount = 0;
         int failed = 0;
+        int entityTrap = 0;
 
         for (File cf : classFiles) {
-            List<String> constants = readUtf8Constants(cf);
-            boolean any = false;
+            List<String> constants;
+            try {
+                constants = readUtf8Constants(cf);
+            } catch (IOException e) {
+                System.out.println("  FAIL  " + cf.getName() + " : cannot parse class file: " + e);
+                failed++;
+                continue;
+            }
             for (String sql : constants) {
-                if (!sql.trim().startsWith("<script>")) {
+                String trimmed = sql.trim();
+                boolean looksLikeSql = startsWithSqlKeyword(trimmed);
+                if (!looksLikeSql) {
                     continue;
                 }
-                any = true;
+                if (!trimmed.startsWith("<script>")) {
+                    // 普通注解：不能被 XML 解析，因此不得包含 XML 实体
+                    plainCount++;
+                    for (String entity : XML_ENTITIES) {
+                        if (sql.contains(entity)) {
+                            entityTrap++;
+                            System.out.println("  FAIL  " + cf.getName()
+                                    + "  : plain SQL annotation contains '" + entity
+                                    + "', which is NOT decoded outside <script>");
+                            int at = sql.indexOf(entity);
+                            System.out.println("        context: ..."
+                                    + sql.substring(Math.max(0, at - 60), Math.min(sql.length(), at + 40))
+                                    + "...");
+                            break;
+                        }
+                    }
+                    continue;
+                }
                 scriptCount++;
                 try {
                     builder.parse(new java.io.ByteArrayInputStream(
@@ -73,22 +106,35 @@ public class CheckMapperXml {
                     System.out.println("  FAIL  " + cf.getName() + " : " + e);
                 }
             }
-            if (any) {
-                classCount++;
-                System.out.println("  ok    " + cf.getName());
-            }
         }
+
         System.out.println();
-        System.out.println("mapper classes with <script> SQL: " + classCount
-                + ", statements checked: " + scriptCount + ", failed: " + failed);
-        System.exit(failed == 0 ? 0 : 1);
+        System.out.println("<script> statements checked: " + scriptCount
+                + ", plain SQL annotations checked: " + plainCount
+                + ", XML errors: " + failed
+                + ", entity traps in plain SQL: " + entityTrap);
+        System.exit((failed == 0 && entityTrap == 0) ? 0 : 1);
+    }
+
+    private static boolean startsWithSqlKeyword(String s) {
+        String upper = s.toUpperCase(java.util.Locale.ROOT);
+        return upper.startsWith("<SCRIPT>") || upper.startsWith("SELECT") || upper.startsWith("INSERT")
+                || upper.startsWith("UPDATE") || upper.startsWith("DELETE");
     }
 
     /**
-     * 解析 class 文件常量池，返回其中全部 CONSTANT_Utf8 常量的值。
+     * 解析 class 文件常量池，返回全部 CONSTANT_Utf8 常量的值。
      *
-     * <p>只实现到能安全跳过各常量类型所需的程度：常量池项按“1 字节 tag + 负载”排列，
-     * 其中 Long 与 Double 占两个槽位。</p>
+     * <p>各常量类型的负载长度（JVMS 4.4）：</p>
+     * <ul>
+     *   <li>1 Utf8: u2 长度 + 字节</li>
+     *   <li>3 Integer / 4 Float: 4</li>
+     *   <li>5 Long / 6 Double: 8，且占两个常量池槽位</li>
+     *   <li>7 Class / 8 String / 16 MethodType / 19 Module / 20 Package: 2</li>
+     *   <li>9/10/11 Fieldref/Methodref/InterfaceMethodref, 12 NameAndType,
+     *       17 Dynamic, 18 InvokeDynamic: 4</li>
+     *   <li>15 MethodHandle: 3</li>
+     * </ul>
      */
     private static List<String> readUtf8Constants(File classFile) throws IOException {
         List<String> out = new ArrayList<String>();
@@ -98,45 +144,45 @@ public class CheckMapperXml {
             if (magic != 0xCAFEBABE) {
                 return out;
             }
-            in.readUnsignedShort();   // minor
-            in.readUnsignedShort();   // major
+            in.readUnsignedShort();   // minor_version
+            in.readUnsignedShort();   // major_version
             int poolCount = in.readUnsignedShort();
             for (int i = 1; i < poolCount; i++) {
                 int tag = in.readUnsignedByte();
                 switch (tag) {
-                    case 1:   // Utf8
+                    case 1:   // CONSTANT_Utf8
                         out.add(in.readUTF());
                         break;
-                    case 3:   // Integer
-                    case 4:   // Float
+                    case 3:   // CONSTANT_Integer
+                    case 4:   // CONSTANT_Float
                         in.skipBytes(4);
                         break;
-                    case 5:   // Long
-                    case 6:   // Double
+                    case 5:   // CONSTANT_Long
+                    case 6:   // CONSTANT_Double
                         in.skipBytes(8);
                         i++;  // 占两个槽位
                         break;
-                    case 7:   // Class
-                    case 8:   // String
-                    case 16:  // MethodType
-                    case 19:  // Module
-                    case 20:  // Package
+                    case 7:   // CONSTANT_Class
+                    case 8:   // CONSTANT_String
+                    case 16:  // CONSTANT_MethodType
+                    case 19:  // CONSTANT_Module
+                    case 20:  // CONSTANT_Package
                         in.skipBytes(2);
                         break;
-                    case 15:  // MethodHandle
-                        in.skipBytes(3);
-                        break;
-                    case 9:   // Fieldref
-                    case 10:  // Methodref
-                    case 11:  // InterfaceMethodref
-                    case 12:  // NameAndType
-                    case 17:  // Dynamic
-                    case 18:  // InvokeDynamic
+                    case 9:   // CONSTANT_Fieldref
+                    case 10:  // CONSTANT_Methodref
+                    case 11:  // CONSTANT_InterfaceMethodref
+                    case 12:  // CONSTANT_NameAndType
+                    case 17:  // CONSTANT_Dynamic
+                    case 18:  // CONSTANT_InvokeDynamic
                         in.skipBytes(4);
                         break;
+                    case 15:  // CONSTANT_MethodHandle
+                        in.skipBytes(3);
+                        break;
                     default:
-                        // 未知 tag：无法安全继续解析，直接返回已读到的常量
-                        return out;
+                        throw new IOException("unknown constant pool tag " + tag
+                                + " at index " + i + " - parser must be updated");
                 }
             }
         }

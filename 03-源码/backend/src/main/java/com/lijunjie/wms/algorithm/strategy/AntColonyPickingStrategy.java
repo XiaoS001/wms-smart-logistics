@@ -70,11 +70,24 @@ public class AntColonyPickingStrategy implements PickingStrategy {
         nodes.addAll(path.getPicks());
         int n = nodes.size();
 
-        if (n <= 2) {
-            List<int[]> trivial = new ArrayList<int[]>();
-            trivial.add(PickPath.io());
-            trivial.add(PickPath.io());
-            return new PickingRoute(label(), trivial, 0.0, System.currentTimeMillis() - start);
+        // 边界情形：只有 1 个拣货点时，节点数为 2。
+        // 此时必须真正“去一趟再回来”，距离为 2 × 该点到出入口的距离；
+        // 若直接返回 (0,0) -> (0,0)，会得到距离 0 且丢掉拣货点，
+        // 是一处会让上层统计与前端可视化同时失真的缺陷。
+        if (n == 2) {
+            List<int[]> single = new ArrayList<int[]>();
+            single.add(PickPath.io());
+            single.add(nodes.get(1));
+            single.add(PickPath.io());
+            List<int[]> cleanedSingle = PickPath.dedupeConsecutive(single);
+            return new PickingRoute(label(), cleanedSingle,
+                    PickPath.pathLength(layout, cleanedSingle), System.currentTimeMillis() - start);
+        }
+        if (n < 2) {
+            List<int[]> empty = new ArrayList<int[]>();
+            empty.add(PickPath.io());
+            empty.add(PickPath.io());
+            return new PickingRoute(label(), empty, 0.0, System.currentTimeMillis() - start);
         }
 
         // 距离矩阵与启发式信息

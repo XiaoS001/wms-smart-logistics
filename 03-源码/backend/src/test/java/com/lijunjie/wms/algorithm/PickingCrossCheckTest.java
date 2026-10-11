@@ -130,6 +130,55 @@ class PickingCrossCheckTest {
         }
         assertTrue(acoBeatsBaseline > 0,
                 "蚁群算法至少在部分算例上应优于 S 型基线，实际提升算例数=" + acoBeatsBaseline);
+
+        // ---- 边界用例：1 个与 2 个拣货点 ----
+        // 只有 1 个拣货点时是最容易被忽略的情形：若实现直接返回出入口到出入口，
+        // 会得到距离 0 并丢掉拣货点，上层统计与前端可视化都会失真。
+        // 期望值按曼哈顿距离手算：distance = 2.5*x + 1.2*y。
+        assertEdgeCase("单拣货点 (1,1)", layout, new int[][]{{1, 1}}, 2 * 3.70);
+        // (0,0)->(1,1)->(1,2)->(0,0) = 3.70 + 1.20 + 4.90
+        assertEdgeCase("两拣货点 (1,1)(1,2)", layout, new int[][]{{1, 1}, {1, 2}}, 9.80);
+        assertEdgeCase("单拣货点远角 (10,20)", layout, new int[][]{{10, 20}}, 2 * 49.00);
+    }
+
+    /**
+     * 边界用例校验：全部策略都必须覆盖全部拣货点，且行走距离符合手算值。
+     *
+     * @param name             用例名称
+     * @param layout           仓库布局
+     * @param picks            拣货点坐标
+     * @param expectedDistance 手算的期望距离
+     */
+    private void assertEdgeCase(String name, WarehouseLayout layout, int[][] picks, double expectedDistance) {
+        List<int[]> points = new ArrayList<int[]>();
+        for (int[] p : picks) {
+            points.add(p);
+        }
+        PickPath path = new PickPath(layout, points);
+        PickingStrategy[] strategies = {
+                new SShapePickingStrategy(),
+                new LargestGapPickingStrategy(),
+                new NearestNeighborPickingStrategy(),
+                new AntColonyPickingStrategy()
+        };
+        for (PickingStrategy strategy : strategies) {
+            PickingRoute route = strategy.solve(path, 20261011L);
+            assertTrue(PickingStrategy.isValidRoute(path, route),
+                    name + "：" + strategy.label() + " 的路径必须覆盖全部拣货点且首尾为出入口，实际="
+                            + describe(route));
+            assertEquals(expectedDistance, route.getDistance(), EPSILON,
+                    name + "：" + strategy.label() + " 的距离应为手算值 " + expectedDistance
+                            + "，实际=" + route.getDistance());
+        }
+    }
+
+    /** 把路径渲染为便于阅读的坐标串，用于断言失败时定位 */
+    private static String describe(PickingRoute route) {
+        StringBuilder sb = new StringBuilder();
+        for (int[] p : route.getRoute()) {
+            sb.append('(').append(p[0]).append(',').append(p[1]).append(')');
+        }
+        return sb.toString();
     }
 
     /** 校验单个确定性策略：距离完全一致、路径合法、不劣于穷举最优 */
