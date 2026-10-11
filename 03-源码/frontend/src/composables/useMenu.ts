@@ -63,6 +63,12 @@ export function useMenu() {
       }
     }
 
+    // 原本有子路由，但过滤后一个都不剩：说明该分组下没有任何有权限的页面，
+    // 此时必须隐藏分组本身。否则会出现空的「统计报表」「系统管理」标题，
+    // 点开里面什么都没有（例如拣货员登录时）。
+    const declaredChildren = (route.children || []).length
+    if (declaredChildren > 0) return null
+
     const perm = meta.perm as string | undefined
     if (!userStore.hasPermission(perm)) return null
 
@@ -97,5 +103,29 @@ export function useMenu() {
     return result
   })
 
-  return { menus }
+  /**
+   * 当前用户第一个可访问的页面路径。
+   *
+   * 用途：登录后与访问根路径时决定落在哪个页面。
+   * 不能直接写死 /dashboard——该页需要 report:view 权限，
+   * 拣货员没有此权限，登录后会直接看到 403 页面，像是系统故障。
+   * 这里改为按菜单顺序找到第一个有权限进入的页面。
+   */
+  const firstAccessiblePath = computed<string | null>(() => {
+    const findLeaf = (items: MenuItem[]): string | null => {
+      for (const item of items) {
+        if (item.children && item.children.length) {
+          const inner = findLeaf(item.children)
+          if (inner) return inner
+          continue
+        }
+        const resolved = router.resolve({ name: item.key })
+        if (resolved.matched.length > 0) return resolved.path
+      }
+      return null
+    }
+    return findLeaf(menus.value)
+  })
+
+  return { menus, firstAccessiblePath }
 }

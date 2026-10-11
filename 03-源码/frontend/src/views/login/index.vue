@@ -11,10 +11,13 @@ import { onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { useUserStore } from '@/stores/user'
+import { useMenu } from '@/composables/useMenu'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+// 登录成功后按角色落到第一个可访问的页面
+const { firstAccessiblePath } = useMenu()
 
 const formRef = ref<FormInstance>()
 const submitting = ref(false)
@@ -62,7 +65,9 @@ async function handleLogin() {
   try {
     await userStore.login({ username: form.username.trim(), password: form.password })
     ElMessage.success(`欢迎回来，${userStore.displayName}`)
-    const redirect = (route.query.redirect as string) || '/dashboard'
+    // 落点按角色决定：不同角色可访问的第一个页面不同，
+    // 固定跳 /dashboard 会让没有 report:view 权限的角色（如拣货员）直接看到 403。
+    const redirect = (route.query.redirect as string) || firstAccessiblePath.value || '/dashboard'
     router.replace(redirect)
   } catch {
     // 失败提示已由请求拦截器统一处理，这里只需恢复按钮状态
@@ -74,7 +79,7 @@ async function handleLogin() {
 onMounted(() => {
   // 若已登录则直接进入系统，避免重复登录
   if (userStore.isLogin) {
-    router.replace('/dashboard')
+    router.replace(firstAccessiblePath.value || '/dashboard')
   }
 })
 </script>

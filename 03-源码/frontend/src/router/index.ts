@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import { useUserStore } from '@/stores/user'
+import { useMenu } from '@/composables/useMenu'
 import { PERM } from '@/utils/constants'
 
 NProgress.configure({ showSpinner: false, minimum: 0.15, speed: 400 })
@@ -201,6 +202,8 @@ router.beforeEach(async (to, _from, next) => {
     : import.meta.env.VITE_APP_TITLE || '智慧仓储管理系统'
 
   const userStore = useUserStore()
+  // 按角色计算落点：不同角色可访问的第一个页面不同
+  const { firstAccessiblePath } = useMenu()
 
   // 未登录：放行白名单，其余跳转登录页并记录来源
   if (!userStore.isLogin) {
@@ -212,9 +215,12 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
 
-  // 已登录但访问登录页：直接回首页
+  // 已登录但访问登录页：直接回到该角色可访问的第一个页面。
+  // 不能固定跳 "/"（其重定向目标 /dashboard 需要 report:view 权限），
+  // 否则拣货员登录后会立刻被判定无权限而看到 403 页面。
   if (to.path === '/login') {
-    next({ path: '/' })
+    const target = firstAccessiblePath.value
+    next({ path: target || '/403' })
     return
   }
 
@@ -228,6 +234,13 @@ router.beforeEach(async (to, _from, next) => {
       next({ path: '/login', query: { redirect: to.fullPath } })
       return
     }
+  }
+
+  // 访问根路径时按角色落到第一个可访问页面
+  if (to.path === '/' || to.path === '') {
+    const target = firstAccessiblePath.value
+    next({ path: target || '/403' })
+    return
   }
 
   // 权限校验：无权限跳 403
