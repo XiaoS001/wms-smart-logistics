@@ -1,8 +1,11 @@
-﻿# MySQL 登录自启动脚本（由启动文件夹的快捷方式调用）
-# 设计要点：
-#   1) 幂等——已在运行则直接退出，不会重复启动
-#   2) 静默——启动过程不弹窗，日志写入 D:\Dev\mysql8\autostart.log
-#   3) 不依赖环境变量——所有路径写死，避免登录时机环境未就绪
+﻿# MySQL sign-in autostart helper.
+# Invoked by the shortcut placed in the user's Startup folder.
+#
+# Design notes:
+#   1) Idempotent - exits immediately when the server is already listening.
+#   2) Silent     - runs hidden at sign-in; all output goes to a log file.
+#   3) No environment variables - every path is absolute, because at sign-in
+#      time the user environment may not be fully applied yet.
 
 $mysqld = 'D:\Dev\mysql8\bin\mysqld.exe'
 $ini    = 'D:\Dev\mysql8\my.ini'
@@ -24,28 +27,28 @@ function Test-Port([string]$Computer, [int]$Port, [int]$TimeoutMs = 1500) {
     } catch { return $false }
 }
 
-Write-Log "=== 自启动检查开始 ==="
+Write-Log "=== autostart check started ==="
 
 if (Test-Port '127.0.0.1' 3306) {
-    Write-Log "MySQL 已在运行，跳过启动"
+    Write-Log "MySQL already running - skipped"
     exit 0
 }
 
 if (-not (Test-Path $mysqld)) {
-    Write-Log "错误：未找到 mysqld.exe（$mysqld）"
+    Write-Log "ERROR: mysqld.exe not found at $mysqld"
     exit 1
 }
 
-Write-Log "正在启动 mysqld ..."
+Write-Log "Starting mysqld ..."
 Start-Process -FilePath $mysqld -ArgumentList "--defaults-file=$ini" -WindowStyle Hidden
 
 for ($i = 1; $i -le 30; $i++) {
     Start-Sleep -Milliseconds 1500
     if (Test-Port '127.0.0.1' 3306) {
-        Write-Log ("启动成功，耗时约 {0} 秒" -f [math]::Round($i * 1.5, 1))
+        Write-Log ("Started successfully in about {0} s" -f [math]::Round($i * 1.5, 1))
         exit 0
     }
 }
 
-Write-Log "启动超时（45 秒内端口 3306 未就绪），请检查 D:\Dev\mysql8\data\mysql-error.log"
+Write-Log "TIMEOUT: port 3306 not ready within 45 s; check D:\Dev\mysql8\data\mysql-error.log"
 exit 1
