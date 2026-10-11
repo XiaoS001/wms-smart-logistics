@@ -3,9 +3,11 @@ package com.lijunjie.wms.controller;
 import com.lijunjie.wms.algorithm.SlottingAssignment;
 import com.lijunjie.wms.common.Result;
 import com.lijunjie.wms.dto.SlottingRecommendResult;
+import com.lijunjie.wms.service.SlottingPlanService;
 import com.lijunjie.wms.service.SlottingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,17 +25,21 @@ import java.util.stream.Collectors;
  * 货位分配算法接口。
  *
  * <p>把算法内核暴露为服务：既支持对整仓求解（货位优化模块使用），
- * 也支持为指定商品推荐货位（入库模块使用）。</p>
+ * 也支持为指定商品推荐货位（入库模块使用），并提供优化方案的
+ * 预览、保存、应用与历史查询。</p>
  */
-@Tag(name = "货位分配算法", description = "货位优化的求解与货位推荐")
+@Tag(name = "货位分配算法", description = "货位优化的求解、方案管理与货位推荐")
 @RestController
 @RequestMapping("/api/slotting")
 public class SlottingController {
 
     private final SlottingService slottingService;
+    private final SlottingPlanService slottingPlanService;
 
-    public SlottingController(SlottingService slottingService) {
+    public SlottingController(SlottingService slottingService,
+                              SlottingPlanService slottingPlanService) {
         this.slottingService = slottingService;
+        this.slottingPlanService = slottingPlanService;
     }
 
     /** 可用策略列表 */
@@ -91,5 +97,83 @@ public class SlottingController {
         SlottingRecommendResult result = slottingService.recommend(warehouseId, ids, strategy,
                 seed == null ? 20261011L : seed);
         return Result.success("货位推荐完成", result);
+    }
+
+    // ------------------------------------------------------------------
+    // 优化方案管理
+    // ------------------------------------------------------------------
+
+    /**
+     * 优化方案预览。
+     *
+     * <p>返回优化前后的加权行走距离与降幅，以及商品到货位的分配明细和搬迁预览。
+     * 该接口不落库，便于反复调整策略参数比较效果。</p>
+     */
+    @Operation(summary = "优化方案预览",
+            description = "返回当前实际布局与优化后布局的加权行走距离、降幅、分配明细与搬迁预览（不落库）")
+    @PostMapping("/plans/preview")
+    public Result<Map<String, Object>> previewPlan(
+            @RequestParam("warehouseId") Long warehouseId,
+            @RequestParam(value = "strategy", required = false, defaultValue = "frequency-greedy") String strategy,
+            @RequestParam(value = "seed", required = false, defaultValue = "20261011") Long seed) {
+        return Result.success("方案预览完成", slottingPlanService.preview(warehouseId, strategy,
+                seed == null ? 20261011L : seed));
+    }
+
+    /** 生成并保存优化方案 */
+    @Operation(summary = "保存优化方案", description = "求解并保存方案，记录优化前后目标值与降幅，供后续应用与追溯")
+    @PostMapping("/plans")
+    public Result<Map<String, Object>> savePlan(
+            @RequestParam("warehouseId") Long warehouseId,
+            @RequestParam(value = "strategy", required = false, defaultValue = "frequency-greedy") String strategy,
+            @RequestParam(value = "seed", required = false, defaultValue = "20261011") Long seed,
+            @RequestParam(value = "remark", required = false) String remark) {
+        return Result.success("优化方案已保存", slottingPlanService.savePlan(warehouseId, strategy,
+                seed == null ? 20261011L : seed, remark));
+    }
+
+    /**
+     * 应用优化方案。
+     *
+     * <p>把商品对应的库存记录搬到优化后的货位，并在同一事务中同步货位占用状态；
+     * 任何冲突都会整体回滚。</p>
+     */
+    @Operation(summary = "应用优化方案",
+            description = "把库存记录搬迁到优化后的货位并同步货位状态，整个过程在同一事务中完成")
+    @PostMapping("/plans/{planId}/apply")
+    public Result<Map<String, Object>> applyPlan(@PathVariable("planId") Long planId) {
+        return Result.success("优化方案已应用", slottingPlanService.applyPlan(planId));
+    }
+
+    /** 优化方案历史 */
+    @Operation(summary = "优化方案历史", description = "按仓库与是否已应用筛选方案记录")
+    @GetMapping("/plans")
+    public Result<List<Map<String, Object>>> listPlans(
+            @RequestParam(value = "warehouseId", required = false) Long warehouseId,
+            @RequestParam(value = "applied", required = false) Integer applied,
+            @RequestParam(value = "limit", required = false, defaultValue = "50") Integer limit) {
+        return Result.success(slottingPlanService.listPlans(warehouseId, applied, limit == null ? 50 : limit));
+    }
+
+    /** 优化方案详情 */
+    @Operation(summary = "优化方案详情", description = "返回方案参数、效果与商品到货位的分配数组")
+    @GetMapping("/plans/{planId}")
+    public Result<Map<String, Object>> planDetail(@PathVariable("planId") Long planId) {
+        return Result.success(slottingPlanService.planDetail(planId));
+    }
+
+    /** 删除未应用的方案 */
+    @Operation(summary = "删除优化方案", description = "已应用的方案不能删除，需保留作为优化记录")
+    @DeleteMapping("/plans/{planId}")
+    public Result<Void> deletePlan(@PathVariable("planId") Long planId) {
+        slottingPlanService.deletePlan(planId);
+        return Result.success("优化方案已删除", null);
+    }
+
+    /** 按策略统计历史优化效果 */
+    @Operation(summary = "优化效果统计", description = "按策略统计历史方案的数量、平均降幅与最佳降幅")
+    @GetMapping("/plans/statistics")
+    public Result<List<Map<String, Object>>> planStatistics() {
+        return Result.success(slottingPlanService.statisticsByStrategy());
     }
 }
