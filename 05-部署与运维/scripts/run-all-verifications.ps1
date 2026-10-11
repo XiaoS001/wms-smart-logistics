@@ -14,6 +14,22 @@ $ErrorActionPreference = 'Continue'
 $root = 'D:\DeepSeekXM\XM01'
 $scriptsDir = Join-Path $root '05-部署与运维\scripts'
 
+# 前置检查：每个验证脚本都会自行启动后端并监听 8080。
+# 若该端口已被占用（例如演示用的后端还在运行），各脚本会在启动阶段失败并立刻退出，
+# 表现为「只跑了几秒、0 项检查、退出码 1」，很容易被误读成代码有问题。
+# 因此这里提前拦截并说明原因。
+$busy = Get-NetTCPConnection -State Listen -LocalPort 8080 -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($busy) {
+    $owner = Get-Process -Id $busy.OwningProcess -ErrorAction SilentlyContinue
+    Write-Host ""
+    Write-Host "无法开始验证：端口 8080 已被占用。" -ForegroundColor Red
+    Write-Host ("  占用进程: PID {0}  {1}" -f $busy.OwningProcess, $(if ($owner) { $owner.ProcessName } else { '未知' })) -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "验证脚本需要自行启动后端实例，请先停止占用该端口的服务（例如演示后端）。" -ForegroundColor Yellow
+    Write-Host ""
+    exit 4
+}
+
 # 排除不是验证类的脚本
 $skip = @('autostart-mysql.ps1', 'start-mysql.ps1', 'stop-mysql.ps1', 'status-mysql.ps1',
           'install-idea.ps1', 'env.cmd', 'mvn.cmd', 'verify-environment.ps1')

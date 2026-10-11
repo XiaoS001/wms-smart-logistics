@@ -87,17 +87,24 @@ public class AuthInterceptor implements HandlerInterceptor {
         rule("GET", "/api/users(/.*)?", "system:view");
 
         // ---------------- 仓库与库位 ----------------
-        // 仓库列表属于所有业务角色都需要的参照数据：出库、库存、库位等页面
-        // 都要先知道"有哪些仓库、当前操作哪个仓库"才能查询。
-        // 若要求 warehouse:view，只有 location:view 的角色（如拣货员）
-        // 会因为拿不到仓库列表而整个页面瘫痪——权限之间必须闭合。
-        // 因此列表只要求登录；仓库的明细与增删改仍要求 warehouse:view。
-        rule("GET", "/api/warehouses", null);
-        // 库区汇总描述的是"库位"的分布，应归属于库位权限，
-        // 这条必须排在下面的 /api/warehouses/{id} 之前，否则会被误判为仓库权限。
+        // 仓库的「读」属于所有业务角色都需要的参照数据：
+        //   - 各页面要先知道"有哪些仓库、当前操作哪个仓库"才能查询；
+        //   - 出库、拣货、库存、货位优化等页面要用仓库布局参数
+        //     （巷道数、纵深数、间距）绘制平面图并计算距离。
+        // 列表接口本来就返回这些布局参数，因此明细接口并未多暴露信息。
+        //
+        // 若把读操作也要求 warehouse:view，只持有 location:view / picking:view
+        // 的角色会因为拿不到仓库信息而整页瘫痪——权限必须对页面实际执行的操作闭合。
+        //
+        // 于是：读（列表 + 明细）只要求登录；仓库管理（增删改）仍要求 warehouse:view。
+        // 注意本项目的权限点只定义了 warehouse:view 一个仓库权限，
+        // 它同时充当"仓库管理模块"的入口权限，前端路由 /base/warehouse 也用它守卫，
+        // 因此没有该权限的角色打不开仓库管理页面。
+        // 库区汇总描述的是"库位"的分布，归属 location:view，
+        // 必须排在 /api/warehouses/{id} 之前，否则会被误判为仓库权限。
         rule("GET", "/api/warehouses/\\d+/locations/summary", "location:view");
         rule("POST", "/api/warehouses/\\d+/locations/generate", "location:view");
-        rule("GET", "/api/warehouses/\\d+", "warehouse:view");
+        rule("GET", "/api/warehouses(/\\d+)?", null);
         rule("POST", "/api/warehouses", "warehouse:view");
         rule("PUT", "/api/warehouses/\\d+", "warehouse:view");
         rule("DELETE", "/api/warehouses/\\d+", "warehouse:view");
