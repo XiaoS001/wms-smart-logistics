@@ -87,11 +87,20 @@ public class AuthInterceptor implements HandlerInterceptor {
         rule("GET", "/api/users(/.*)?", "system:view");
 
         // ---------------- 仓库与库位 ----------------
-        rule("GET", "/api/warehouses(/.*)?", "warehouse:view");
+        // 仓库列表属于所有业务角色都需要的参照数据：出库、库存、库位等页面
+        // 都要先知道"有哪些仓库、当前操作哪个仓库"才能查询。
+        // 若要求 warehouse:view，只有 location:view 的角色（如拣货员）
+        // 会因为拿不到仓库列表而整个页面瘫痪——权限之间必须闭合。
+        // 因此列表只要求登录；仓库的明细与增删改仍要求 warehouse:view。
+        rule("GET", "/api/warehouses", null);
+        // 库区汇总描述的是"库位"的分布，应归属于库位权限，
+        // 这条必须排在下面的 /api/warehouses/{id} 之前，否则会被误判为仓库权限。
+        rule("GET", "/api/warehouses/\\d+/locations/summary", "location:view");
+        rule("POST", "/api/warehouses/\\d+/locations/generate", "location:view");
+        rule("GET", "/api/warehouses/\\d+", "warehouse:view");
         rule("POST", "/api/warehouses", "warehouse:view");
         rule("PUT", "/api/warehouses/\\d+", "warehouse:view");
         rule("DELETE", "/api/warehouses/\\d+", "warehouse:view");
-        rule("POST", "/api/warehouses/\\d+/locations/generate", "location:view");
         rule("GET", "/api/locations(/.*)?", "location:view");
 
         // ---------------- 商品与分类 ----------------

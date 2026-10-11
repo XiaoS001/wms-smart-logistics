@@ -78,12 +78,25 @@ const zoneRows = computed(() =>
 )
 
 async function loadWarehouses() {
-  warehouses.value = await warehouseApi.list()
-  if (warehouses.value.length && !currentWarehouse.value) {
+  try {
+    warehouses.value = await warehouseApi.list()
+  } catch {
+    // 拿不到仓库列表时不能让整页瘫痪：
+    // 当前仓库 ID 是持久化的，用它兜底仍可查询货位。
+    warehouses.value = []
+    ElMessage.warning('未能获取仓库列表，已使用上次选择的仓库')
+  }
+
+  if (!currentWarehouse.value) {
     const target =
-      warehouses.value.find((w) => w.id === appStore.currentWarehouseId) ?? warehouses.value[0]
+      warehouses.value.find((w) => w.id === appStore.currentWarehouseId) ??
+      warehouses.value[0] ??
+      // 列表为空时的兜底：只用 ID，布局参数等展示信息缺失
+      ({ id: appStore.currentWarehouseId, warehouseName: appStore.currentWarehouseName } as BaseWarehouse)
     currentWarehouse.value = target
-    appStore.setCurrentWarehouse(target.id, target.warehouseName)
+    if (target.warehouseName) {
+      appStore.setCurrentWarehouse(target.id, target.warehouseName)
+    }
   }
 }
 
