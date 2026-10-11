@@ -14,11 +14,14 @@ INSERT INTO `sys_role` (id, role_code, role_name, description) VALUES
   (3, 'PICKER', '拣货员',     '负责按路径拣货')
 ON DUPLICATE KEY UPDATE role_name = VALUES(role_name), description = VALUES(description);
 
--- 2. 用户（示例密码明文为 123456，BCrypt 加密后在系统中修改）
+-- 注：下列密码密文由与后端 PasswordEncoder 完全一致的 PBKDF2 算法生成，
+--     明文均为 123456；首次登录后请在系统中修改。
+--     格式：pbkdf2$迭代次数$盐(Base64)$派生密钥(Base64)
+-- 2. 用户（示例密码明文均为 123456）
 INSERT INTO `sys_user` (id, username, password, real_name, phone, status) VALUES
-  (1, 'admin',  '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '李俊杰', '13800000000', 1),
-  (2, 'keeper', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '仓管员', '13800000001', 1),
-  (3, 'picker', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '拣货员', '13800000002', 1)
+  (1, 'admin',  'pbkdf2$120000$obLD1OX2BxgpOktcbX6PkA==$oAQghcP/m9QYIQreMWJh9X0KV7O5zAzHRuosIHdoMoU=', '李俊杰', '13800000000', 1),
+  (2, 'keeper', 'pbkdf2$120000$scLT5PUGFyg5SltsfY6fAQ==$oaYNrIrEUzpxukweeo1LprCN2wFX6WdED4CWCnd3m60=', '仓管员', '13800000001', 1),
+  (3, 'picker', 'pbkdf2$120000$wdLj9AUWJzhJWmt8jZ4PEg==$72SkQz5r+BfaJ+EiOVAYrELaG6TclyL+/QFqWBemex8=', '拣货员', '13800000002', 1)
 ON DUPLICATE KEY UPDATE real_name = VALUES(real_name);
 
 -- 3. 用户角色关联
