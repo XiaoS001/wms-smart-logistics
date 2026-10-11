@@ -239,7 +239,108 @@ Check "strategies: list for the selector" (@($r.json.data.PSObject.Properties).C
       ("codes=" + (@($r.json.data.PSObject.Properties | ForEach-Object { $_.Name }) -join ','))
 
 Write-Host ""
-Write-Host "=== 7. Cleanup ==="
+Write-Host "=== 7. Product / category / warehouse pages data ==="
+$r = Api 'Get' "$base/api/products?limit=2000" $null
+Check "products: list for the page" ($r.json.data.Count -ge 5) ("count=" + $r.json.data.Count)
+Check "products: sorted by pickFreq desc" `
+      (($r.json.data[0].pickFreq -ge $r.json.data[1].pickFreq)) `
+      ("first=" + $r.json.data[0].pickFreq + " second=" + $r.json.data[1].pickFreq)
+Check "products: every row has abcClass for the tag" `
+      (@($r.json.data | Where-Object { $null -eq $_.abcClass }).Count -eq 0) `
+      "all rows carry abcClass"
+Check "products: categoryId present for the filter" ($null -ne $r.json.data[0].categoryId) `
+      ("categoryId=" + $r.json.data[0].categoryId)
+
+# 单商品详情与新增、编辑、删除的完整回路
+$newCode = 'VF' + (Get-Random -Minimum 100000 -Maximum 999999)
+$r = Api 'Post' "$base/api/products" ('{"productCode":"' + $newCode + '","productName":"verify frontend product","unit":"件","pickFreq":7,"abcClass":"C","status":1}')
+Check "products: create works" ($r.json.code -eq 200) ("id=" + $r.json.data.id)
+$createdId = $r.json.data.id
+$r = Api 'Put' "$base/api/products/$createdId" ('{"productCode":"' + $newCode + '","productName":"verify frontend product edited","unit":"件","pickFreq":9,"abcClass":"C","status":1}')
+Check "products: update works" ($r.json.code -eq 200) ("name=" + $r.json.data.productName)
+$r = Api 'Get' "$base/api/products/$createdId" $null
+Check "products: detail works" ($r.json.data.productName -eq 'verify frontend product edited') ("pickFreq=" + $r.json.data.pickFreq)
+
+# 频次校正：后端为增量累加接口，页面按差量补足
+$r = Api 'Post' "$base/api/products/$createdId/pick-freq?delta=3" $null
+Check "products: pickFreq accumulates (9+3=12)" ($r.json.data.pickFreq -eq 12) ("pickFreq=" + $r.json.data.pickFreq)
+
+# ABC 分类重算：页面依赖返回的数量与占比
+$r = Api 'Post' "$base/api/products/abc-classify" $null
+$abc = $r.json.data
+Check "products: abc-classify returns counts" (@($abc.classCounts.PSObject.Properties).Count -ge 2) `
+      ("counts=" + (@($abc.classCounts.PSObject.Properties | ForEach-Object { $_.Name + '=' + $_.Value }) -join ' '))
+Check "products: abc-classify returns ratios" (@($abc.classFrequencyRatio.PSObject.Properties).Count -ge 2) `
+      ("ratios=" + (@($abc.classFrequencyRatio.PSObject.Properties | ForEach-Object { $_.Name + '=' + $_.Value }) -join ' '))
+Check "products: abc-classify updated rows" ([int]$abc.updatedCount -ge 5) ("updated=" + $abc.updatedCount)
+
+$r = Api 'Delete' "$base/api/products/$createdId" $null
+Check "products: delete works" ($r.json.code -eq 200) ("code=" + $r.json.code)
+
+# 分类树：页面左侧树依赖父子结构与商品数量
+$r = Api 'Get' "$base/api/categories/tree" $null
+$tree = $r.json.data
+Check "categories: tree returned" ($tree.Count -ge 1) ("roots=" + $tree.Count)
+$countNode = 0
+$withCount = 0
+function Walk-Tree($nodes) {
+    foreach ($n in $nodes) {
+        $script:countNode++
+        if ($null -ne $n.productCount) { $script:withCount++ }
+        if ($n.children -and $n.children.Count -gt 0) { Walk-Tree $n.children }
+    }
+}
+$countNode = 0; $withCount = 0
+Walk-Tree $tree
+Check "categories: every node carries productCount" ($withCount -eq $countNode) `
+      ("nodes=" + $countNode + " withCount=" + $withCount)
+Check "categories: has nested children" (@($tree | Where-Object { $_.children.Count -gt 0 }).Count -ge 1) `
+      "父子结构存在"
+$r = Api 'Get' "$base/api/categories" $null
+Check "categories: flat list for selects" ($r.json.data.Count -ge $countNode) ("flat=" + $r.json.data.Count)
+
+# 仓库布局参数（页面表单与最远距离估算依赖）
+$r = Api 'Get' "$base/api/warehouses" $null
+$w = $r.json.data[0]
+$expectedMax = [double]$w.aisleGap * [int]$w.aisleCount + [double]$w.rowGap * [int]$w.rowCount
+Check "warehouse: max distance computable in page" ($expectedMax -gt 0) ("maxDistance=" + $expectedMax + " m")
+
+Write-Host ""
+Write-Host "=== 8. Inbound page data (slotting suggestion reasons) ==="
+$r = Api 'Get' "$base/api/inbound/orders?warehouseId=1&limit=100" $null
+Check "inbound: list for the page" ($r.json.data.Count -ge 1) ("count=" + $r.json.data.Count)
+$order = $r.json.data | Where-Object { $_.useSlottingSuggest -eq 1 } | Select-Object -First 1
+Check "inbound: order flagged as using slotting" ($null -ne $order) `
+      ("orderNo=" + $(if ($order) { $order.orderNo } else { 'none' }))
+
+$r = Api 'Get' "$base/api/inbound/orders/$($order.id)" $null
+$dItems = $r.json.data.items
+Check "inbound detail: items returned" ($dItems.Count -ge 1) ("items=" + $dItems.Count)
+Check "inbound detail: every item has a recommended location" `
+      (@($dItems | Where-Object { $_.locationCode }).Count -eq $dItems.Count) `
+      ("withLocation=" + @($dItems | Where-Object { $_.locationCode }).Count)
+$withReason = @($dItems | Where-Object { $_.suggestReason -and $_.suggestReason.Length -gt 10 })
+Check "inbound detail: suggestion reason present for the page" ($withReason.Count -eq $dItems.Count) `
+      ("withReason=" + $withReason.Count)
+if ($withReason.Count -gt 0) {
+    Write-Host ("      sample reason: " + $withReason[0].suggestReason)
+}
+Check "inbound detail: items carry distance for sorting" `
+      (@($dItems | Where-Object { $null -ne $_.distance }).Count -eq $dItems.Count) `
+      "所有明细带距离，页面可按距离升序展示"
+
+# details 按距离升序后，高频商品应排在前面（页面用它说明"高频近端"）
+$sorted = @($dItems | Sort-Object -Property distance)
+$topFreq = @($dItems | Sort-Object -Property pickFreq -Descending)[0]
+Check "inbound detail: highest-frequency item sits nearest" `
+    ([double]$topFreq.distance -le [double]$sorted[-1].distance) `
+    ("top freq product " + $topFreq.productCode + " distance=" + $topFreq.distance)
+
+$r = Api 'Get' "$base/api/products?limit=2000" $null
+Check "inbound page: product options available" ($r.json.data.Count -ge 5) ("products=" + $r.json.data.Count)
+
+Write-Host ""
+Write-Host "=== 9. Cleanup ==="
 Sql "DELETE FROM wms.inv_stock;" | Out-Null
 Sql "DELETE FROM wms.biz_outbound_item;" | Out-Null
 Sql "DELETE FROM wms.biz_outbound_order;" | Out-Null
