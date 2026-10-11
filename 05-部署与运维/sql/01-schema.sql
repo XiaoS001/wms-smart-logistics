@@ -344,7 +344,8 @@ CREATE TABLE `biz_stocktake` (
   `remark` VARCHAR(255) NULL COMMENT '备注',
   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_stocktake_no` (stocktake_no) COMMENT '盘点单号唯一',
+  UNIQUE KEY `uk_stocktake_no_loc_product` (`stocktake_no`, `location_id`, `product_id`) COMMENT '同一盘点单内货位+商品唯一',
+  KEY `idx_stocktake_no` (stocktake_no) COMMENT '按盘点单号查询',
   KEY `idx_warehouse_status` (warehouse_id, status) COMMENT '按仓库与状态查询',
   KEY `idx_location` (location_id) COMMENT '按货位查询'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='库存盘点记录与差异';

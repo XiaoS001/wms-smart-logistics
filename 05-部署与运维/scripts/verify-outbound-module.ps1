@@ -48,7 +48,7 @@ $TAG = 'verify-outbound'
 
 Write-Host "=== 1. Build and unit tests ==="
 Push-Location $backend
-$out = & $mvn -B test 2>&1 | Out-String
+$out = & $mvn -B clean test package 2>&1 | Out-String
 $code = $LASTEXITCODE
 Pop-Location
 if ($code -ne 0) {
@@ -73,9 +73,6 @@ Check "baseline recorded" $true ("freqs=" + (($freqBefore.GetEnumerator() | ForE
 
 Write-Host ""
 Write-Host "=== 3. Start application ==="
-Push-Location $backend
-[void](& $mvn -B -q -DskipTests package 2>&1)
-Pop-Location
 $psi = New-Object System.Diagnostics.ProcessStartInfo
 $psi.FileName = $java
 $psi.Arguments = '-jar "' + $jar + '"'

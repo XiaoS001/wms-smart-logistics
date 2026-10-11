@@ -90,6 +90,26 @@
 
     <build>
         <plugins>
+            <!--
+                显式指定编译器编码。
+
+                背景：本项目路径含中文（D:\DeepSeekXM\XM01\03-源码\backend），
+                若 maven-compiler-plugin 不指定 encoding，增量编译的状态文件
+                （target/maven-status/.../inputFiles.lst）会以平台默认编码（Windows 中文
+                环境为 GBK）写入，随后被按 UTF-8 读取，报
+                "Error reading old mojo status ... Input length = 1" 并中断构建。
+                在此固定为 UTF-8 可从根上避免该问题。
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
