@@ -145,7 +145,43 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 
 启动后接口文档地址：`http://localhost:8080/swagger-ui.html`
 
-## 七、文档索引
+## 七、Git 与推送约定
+
+### 7.1 仓库信息
+
+| 项 | 值 |
+|---|---|
+| 远程仓库 | `https://github.com/XiaoS001/wms-smart-logistics`（公开） |
+| 默认分支 | `main` |
+| 提交身份 | 李俊杰 / 2685210142@qq.com |
+
+### 7.2 网络与代理（重要）
+
+GitHub 的连通性随网络环境变化，`git` **不会自动使用系统代理**，因此推送前需按当前网络状态二选一：
+
+```powershell
+# 情况一：Clash 等代理软件正在运行（系统代理开启）
+git config --local http.proxy  http://127.0.0.1:7897
+git config --local https.proxy http://127.0.0.1:7897
+
+# 情况二：直连可用（代理已退出）
+git config --local --unset http.proxy
+git config --local --unset https.proxy
+```
+
+判断依据：`git ls-remote origin HEAD` 能返回提交号即当前配置可用。
+
+### 7.3 日常提交
+
+```bash
+git add -A
+git commit -m "feat: 简明描述本次改动"
+git push origin main
+```
+
+**约定**：里程碑节点（M1/M2/M3）必推一次；`03-源码/backend/src/main/resources/application-local.yml` 与含密码的本地文档**永远不要**提交。
+
+## 八、文档索引
 
 | 文档 | 位置 |
 |---|---|
@@ -157,7 +193,7 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 | 实验结果汇总 | [`04-测试与实验/03-算法对比实验/实验结果汇总.md`](04-测试与实验/03-算法对比实验/实验结果汇总.md) |
 | 敏感信息管理说明 | [`SECURITY.md`](SECURITY.md) |
 
-## 八、开发进度
+## 九、开发进度
 
 | 阶段 | 状态 |
 |---|---|
@@ -172,10 +208,10 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 | 系统测试与正式实验报告 | ⬜ 待开始 |
 | 毕业论文 | ⬜ 待开始 |
 
-## 九、许可证
+## 十、许可证
 
 本项目为教学用途的毕业设计作品。算法实现与文档均为本人独立完成，参考的公开文献已在论文与设计文档中标注。
 
-## 十、说明
+## 十一、说明
 
 系统中使用的示例数据（商品、仓库、订单）均为程序生成的模拟数据，不涉及任何真实企业数据。数据库连接等敏感信息按 [`SECURITY.md`](SECURITY.md) 的约定管理，未进入版本库。
