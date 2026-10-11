@@ -49,8 +49,23 @@ INSERT INTO `sys_permission` (id, parent_id, perm_code, perm_name, perm_type, pa
   (17, 9, 'picking:run', '执行拣货路径规划', 2, NULL, 1)
 ON DUPLICATE KEY UPDATE perm_name = VALUES(perm_name);
 
--- 5. 管理员拥有全部权限
+-- 5. 角色权限分配
+--    管理员：全部权限
 INSERT INTO `sys_role_permission` (role_id, perm_id) SELECT 1, id FROM `sys_permission`
+ON DUPLICATE KEY UPDATE role_id = VALUES(role_id);
+
+--    仓管员（KEEPER）：业务管理类权限，含基础数据的增改与出入库操作，不含系统管理与算法调优
+INSERT INTO `sys_role_permission` (role_id, perm_id)
+SELECT 2, id FROM `sys_permission`
+WHERE perm_code IN ('warehouse:view','location:view','product:view','product:add','product:edit',
+                    'inbound:view','inbound:add','outbound:view','outbound:add',
+                    'stock:view','report:view')
+ON DUPLICATE KEY UPDATE role_id = VALUES(role_id);
+
+--    拣货员（PICKER）：只看与拣货相关的信息，以及执行拣货路径规划
+INSERT INTO `sys_role_permission` (role_id, perm_id)
+SELECT 3, id FROM `sys_permission`
+WHERE perm_code IN ('location:view','product:view','outbound:view','stock:view','picking:view','picking:run')
 ON DUPLICATE KEY UPDATE role_id = VALUES(role_id);
 
 -- 6. 示例仓库（10 巷道 × 20 纵深，与算法实验算例一致）
