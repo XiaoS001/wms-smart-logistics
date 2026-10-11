@@ -138,4 +138,25 @@ public interface ReportMapper {
             + "IFNULL(pick_freq, 0) AS pickFreq, IFNULL(abc_class, 'C') AS abcClass "
             + "FROM base_product WHERE deleted = 0 ORDER BY pick_freq DESC, id LIMIT #{limit}")
     List<Map<String, Object>> topFrequencyProducts(@Param("limit") int limit);
+
+    /**
+     * 全部商品的出库频次合计。
+     *
+     * <p>频次贡献结构必须用<b>全量</b>频次作为分母：累计占比的含义是
+     * “前若干个高频商品占全部出库频次的比例”，而 ABC 分类也正是按全量频次
+     * 累加划分 70%/90% 的。若改用“前 N 个商品的频次和”作分母，
+     * 当商品总数超过查询条数时占比会被系统性抬高，
+     * 得到的“贡献 70% 频次所需商品数”会偏小，与 ABC 分类结果不一致。</p>
+     */
+    @Select("SELECT IFNULL(SUM(pick_freq), 0) FROM base_product WHERE deleted = 0")
+    long sumAllPickFrequency();
+
+    /**
+     * 未删除的商品总数。
+     *
+     * <p>频次贡献接口只返回前 N 条，调用方需要知道商品总数才能判断
+     * 展示的是否为全量，因此一并返回。</p>
+     */
+    @Select("SELECT COUNT(*) FROM base_product WHERE deleted = 0")
+    long countAllProducts();
 }

@@ -220,24 +220,50 @@ public class ReportServiceImpl implements ReportService {
         if (warehouse == null) {
             throw new BusinessException(404, "仓库不存在");
         }
-        // 以有库存的货位作为拣货点集合
+        // 以有库存的货位作为拣货点集合。
+        // 按货位到出入口的距离升序、再按货位 id 升序排序后再截断：
+        // 若直接按数据库返回顺序截断，超过上限时取到哪 120 个货位取决于
+        // 底层返回顺序，同样的数据可能得到不同的统计数据，无法复现。
         List<InvStock> stocks = stockMapper.selectList(new LambdaQueryWrapper<InvStock>()
                 .eq(InvStock::getWarehouseId, warehouseId)
-                .gt(InvStock::getQuantity, BigDecimal.ZERO));
+                .gt(InvStock::getQuantity, BigDecimal.ZERO)
+                .orderByAsc(InvStock::getLocationId));
         if (stocks.isEmpty()) {
             throw new BusinessException(409, "该仓库暂无库存，无法统计拣货路径效果");
         }
 
+        int aisleCount = warehouse.getAisleCount() == null ? 1 : warehouse.getAisleCount();
+        int rowCount = warehouse.getRowCount() == null ? 1 : warehouse.getRowCount();
+        double aisleGap = warehouse.getAisleGap() == null ? 2.5 : warehouse.getAisleGap().doubleValue();
+        double rowGap = warehouse.getRowGap() == null ? 1.2 : warehouse.getRowGap().doubleValue();
+
         List<int[]> picks = new ArrayList<int[]>();
+        List<double[]> candidates = new ArrayList<double[]>();
         for (InvStock stock : stocks) {
-            if (picks.size() >= MAX_PICK_POINTS) {
-                break;
-            }
             BaseLocation location = locationMapper.selectById(stock.getLocationId());
             if (location == null || location.getAisleNo() == null || location.getRowNo() == null) {
                 continue;
             }
-            int[] point = new int[]{location.getAisleNo(), location.getRowNo()};
+            double distance = aisleGap * location.getAisleNo() + rowGap * location.getRowNo();
+            candidates.add(new double[]{distance, location.getAisleNo(), location.getRowNo()});
+        }
+        // 距离升序、同距离时按坐标升序，保证结果完全确定
+        candidates.sort(new java.util.Comparator<double[]>() {
+            @Override
+            public int compare(double[] a, double[] b) {
+                int c = Double.compare(a[0], b[0]);
+                if (c != 0) {
+                    return c;
+                }
+                c = Double.compare(a[1], b[1]);
+                return c != 0 ? c : Double.compare(a[2], b[2]);
+            }
+        });
+        for (double[] c : candidates) {
+            if (picks.size() >= MAX_PICK_POINTS) {
+                break;
+            }
+            int[] point = new int[]{(int) c[1], (int) c[2]};
             boolean exists = false;
             for (int[] p : picks) {
                 if (p[0] == point[0] && p[1] == point[1]) {
@@ -252,12 +278,10 @@ public class ReportServiceImpl implements ReportService {
         if (picks.isEmpty()) {
             throw new BusinessException(409, "没有可用的货位坐标，无法统计拣货路径效果");
         }
+        // 截断只影响参与统计的货位数量，取样情况一并返回，便于判断口径
+        int totalStockLocations = candidates.size();
 
-        WarehouseLayout layout = new WarehouseLayout(
-                warehouse.getAisleCount() == null ? 1 : warehouse.getAisleCount(),
-                warehouse.getRowCount() == null ? 1 : warehouse.getRowCount(),
-                warehouse.getAisleGap() == null ? 2.5 : warehouse.getAisleGap().doubleValue(),
-                warehouse.getRowGap() == null ? 1.2 : warehouse.getRowGap().doubleValue());
+        WarehouseLayout layout = new WarehouseLayout(aisleCount, rowCount, aisleGap, rowGap);
         PickPath path = new PickPath(layout, picks);
 
         Map<String, Double> distances = new LinkedHashMap<String, Double>();
@@ -290,7 +314,11 @@ public class ReportServiceImpl implements ReportService {
         data.put("distances", distances);
         data.put("elapsedMillis", elapsed);
         data.put("improvementVsSShapePercent", improvement);
-        data.put("note", "以当前有库存的货位为拣货点集合，改善比例相对传统 S 型穿越策略计算");
+        // 取样信息：有库存的货位可能超过统计上限，此处说明实际参与统计的数量
+        data.put("stockLocationCount", totalStockLocations);
+        data.put("sampled", totalStockLocations > picks.size());
+        data.put("note", "以当前有库存的货位为拣货点集合（按距出入口距离升序取样），"
+                + "改善比例相对传统 S 型穿越策略计算");
         return data;
     }
 
@@ -304,10 +332,12 @@ public class ReportServiceImpl implements ReportService {
         int top = Math.max(1, Math.min(limit, 100));
         List<Map<String, Object>> rows = reportMapper.topFrequencyProducts(top);
 
-        BigDecimal total = BigDecimal.ZERO;
-        for (Map<String, Object> row : rows) {
-            total = total.add(BigDecimal.valueOf(toLong(row.get("pickFreq"))));
-        }
+        // 分母必须是全部商品的频次合计，而不是这 top 条的合计：
+        // 后者在商品总数超过 top 时会抬高占比，使“贡献 70% 频次所需的商品数”
+        // 偏小，与 ABC 分类（按全量频次累加划分）产生口径矛盾。
+        long totalFreq = reportMapper.sumAllPickFrequency();
+
+        BigDecimal total = BigDecimal.valueOf(totalFreq);
         // 累计占比：用于说明“少数商品贡献多数出库量”
         BigDecimal cumulative = BigDecimal.ZERO;
         List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
@@ -316,8 +346,8 @@ public class ReportServiceImpl implements ReportService {
             Map<String, Object> row = rows.get(i);
             long freq = toLong(row.get("pickFreq"));
             cumulative = cumulative.add(BigDecimal.valueOf(freq));
-            double ratio = total.compareTo(BigDecimal.ZERO) == 0 ? 0.0
-                    : cumulative.doubleValue() / total.doubleValue() * 100.0;
+            double ratio = totalFreq <= 0 ? 0.0
+                    : cumulative.doubleValue() / (double) totalFreq * 100.0;
             if (crossingIndex < 0 && ratio >= 70.0) {
                 crossingIndex = i + 1;
             }
@@ -329,9 +359,12 @@ public class ReportServiceImpl implements ReportService {
         Map<String, Object> data = new LinkedHashMap<String, Object>();
         data.put("topCount", top);
         data.put("frequencySum", total);
+        // 明示统计范围，避免把 top 条合计误读为全量合计
+        data.put("totalProductCount", reportMapper.countAllProducts());
         data.put("items", items);
         data.put("productsFor70Percent", crossingIndex < 0 ? null : crossingIndex);
-        data.put("note", "累计出库频次占比达到 70% 所需的商品数，用于说明 ABC 分类的划分依据");
+        data.put("note", "累计出库频次占比达到 70% 所需的商品数，用于说明 ABC 分类的划分依据；"
+                + "分母为全部商品的出库频次合计，与 ABC 分类口径一致");
         return data;
     }
 

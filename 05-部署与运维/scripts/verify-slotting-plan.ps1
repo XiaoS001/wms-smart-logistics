@@ -36,8 +36,14 @@ function Check($name, $condition, $detail) {
     if ($condition) { Write-Host ("  [PASS] {0,-46} {1}" -f $name, $detail) -ForegroundColor Green; $script:pass++ }
     else            { Write-Host ("  [FAIL] {0,-46} {1}" -f $name, $detail) -ForegroundColor Red;   $script:fail++ }
 }
+# 后端已启用认证与权限校验，统一在此引入共享的登录辅助。
+. "$PSScriptRoot\auth-helper.ps1"
+
 function Api($method, $url, $body) {
     $p = @{ Uri = $url; Method = $method; TimeoutSec = 60; UseBasicParsing = $true; SkipHttpErrorCheck = $true }
+    # 携带访问令牌：无令牌或权限不足时接口会返回 401 / 403
+    $__h = Get-AuthHeaders
+    if ($__h) { $p.Headers = $__h }
     if ($body) { $p.Body = $body; $p.ContentType = 'application/json' }
     try { $r = Invoke-WebRequest @p } catch { return @{ status = 0; json = $null; raw = $_.Exception.Message } }
     $j = $null; try { $j = $r.Content | ConvertFrom-Json } catch { }
@@ -108,6 +114,14 @@ for ($i = 1; $i -le 40; $i++) {
     if ($proc.HasExited) { break }
     if ((Api 'Get' "$base/api/health/ping" $null).status -eq 200) { $ready = $true; break }
 }
+# 登录以取得访问令牌（后端所有 /api/** 接口均要求认证）
+if ($ready) {
+    $null = Initialize-Auth
+    if (-not $global:WMS_TOKEN) {
+        Write-Host '  登录失败，后续请求将因缺少令牌返回 401' -ForegroundColor Red
+    }
+}
+
 if (-not $ready) {
     Write-Host "  application not ready" -ForegroundColor Red
     if (-not $proc.HasExited) { $proc.Kill() }
@@ -230,7 +244,14 @@ Write-Host "=== 10. Guards and validation ==="
 $r = Api 'Post' "$base/api/slotting/plans/$planId/apply" $null
 Check "re-apply rejected (409)" ($r.status -eq 409) ("http=" + $r.status + " msg=" + $r.json.message)
 $delResp = $null
-try { $delResp = Invoke-WebRequest -Uri "$base/api/slotting/plans/$planId" -Method Delete -TimeoutSec 30 -UseBasicParsing -SkipHttpErrorCheck } catch { }
+try {
+    # 带令牌，否则鉴权会先返回 401，掩盖应有的 409
+    $delParams = @{ Uri = "$base/api/slotting/plans/$planId"; Method = 'Delete'
+                    TimeoutSec = 30; UseBasicParsing = $true; SkipHttpErrorCheck = $true }
+    $delAuth = Get-AuthHeaders
+    if ($delAuth) { $delParams.Headers = $delAuth }
+    $delResp = Invoke-WebRequest @delParams
+} catch { }
 Check "delete applied plan rejected (409)" ($null -ne $delResp -and [int]$delResp.StatusCode -eq 409) `
       ("http=" + $(if ($delResp) { [int]$delResp.StatusCode } else { "no response" }))
 $r = Api 'Post' "$base/api/slotting/plans/preview?warehouseId=999999" $null
@@ -244,7 +265,13 @@ $r = Api 'Post' ("$base/api/slotting/plans?warehouseId=1&strategy=random&remark=
 $pendingId = $r.json.data.planId
 Check "second plan saved" ($r.json.code -eq 200) ("planNo=" + $r.json.data.planNo)
 $delResp2 = $null
-try { $delResp2 = Invoke-WebRequest -Uri "$base/api/slotting/plans/$pendingId" -Method Delete -TimeoutSec 30 -UseBasicParsing -SkipHttpErrorCheck } catch { }
+try {
+    $delParams2 = @{ Uri = "$base/api/slotting/plans/$pendingId"; Method = 'Delete'
+                     TimeoutSec = 30; UseBasicParsing = $true; SkipHttpErrorCheck = $true }
+    $delAuth2 = Get-AuthHeaders
+    if ($delAuth2) { $delParams2.Headers = $delAuth2 }
+    $delResp2 = Invoke-WebRequest @delParams2
+} catch { }
 Check "pending plan deleted" ($null -ne $delResp2 -and [int]$delResp2.StatusCode -eq 200) `
       ("http=" + $(if ($delResp2) { [int]$delResp2.StatusCode } else { "no response" }))
 

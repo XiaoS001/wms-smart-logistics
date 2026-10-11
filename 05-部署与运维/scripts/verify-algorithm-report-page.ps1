@@ -17,8 +17,14 @@ function Check($name, $condition, $detail) {
     if ($condition) { Write-Host ("  [PASS] {0,-48} {1}" -f $name, $detail) -ForegroundColor Green; $script:pass++ }
     else            { Write-Host ("  [FAIL] {0,-48} {1}" -f $name, $detail) -ForegroundColor Red;   $script:fail++ }
 }
+# 后端已启用认证与权限校验，统一在此引入共享的登录辅助。
+. "$PSScriptRoot\auth-helper.ps1"
+
 function Api($method, $url, $body) {
     $p = @{ Uri = $url; Method = $method; TimeoutSec = 60; UseBasicParsing = $true; SkipHttpErrorCheck = $true }
+    # 携带访问令牌：无令牌或权限不足时接口会返回 401 / 403
+    $__h = Get-AuthHeaders
+    if ($__h) { $p.Headers = $__h }
     if ($body) { $p.Body = $body; $p.ContentType = 'application/json' }
     try { $r = Invoke-WebRequest @p } catch { return @{ status = 0; json = $null; raw = $_.Exception.Message } }
     $j = $null; try { $j = $r.Content | ConvertFrom-Json } catch { }
@@ -63,6 +69,14 @@ for ($i = 1; $i -le 40; $i++) {
     if ((Api 'Get' "$base/api/health/ping" $null).status -eq 200) { $ready = $true; break }
 }
 Check "后端已就绪" $ready ("等待 " + ($i * 3) + " 秒")
+# 登录以取得访问令牌（后端所有 /api/** 接口均要求认证）
+if ($ready) {
+    $null = Initialize-Auth
+    if (-not $global:WMS_TOKEN) {
+        Write-Host '  登录失败，后续请求将因缺少令牌返回 401' -ForegroundColor Red
+    }
+}
+
 if (-not $ready) { if (-not $proc.HasExited) { $proc.Kill() }; exit 2 }
 
 Write-Host ""

@@ -1,4 +1,4 @@
-﻿# Extended verification for the user & permission module.
+# Extended verification for the user & permission module.
 #
 # Covers what the basic smoke test does not:
 #   - clean build with zero compiler warnings
@@ -161,17 +161,33 @@ Check "token without Bearer prefix" ($r.json.data.username -eq 'admin') ("userna
 
 Write-Host ""
 Write-Host "=== 6. User endpoints ==="
-$r = Invoke-Api 'Get' "$base/api/users" $null $null
+# 用户接口需要 system:view 权限，只有管理员拥有，因此必须带管理员令牌
+$adminAuth = @{ Authorization = ("Bearer " + $tokens['admin']) }
+$r = Invoke-Api 'Get' "$base/api/users" $null $adminAuth
 Check "user list returned" ($r.json.data.Count -ge 3) ("count=" + $r.json.data.Count)
 $leak = $false
 foreach ($u in $r.json.data) { if ($null -ne $u.password) { $leak = $true } }
 Check "no password in any row" (-not $leak) "checked all rows"
 
-$r = Invoke-Api 'Get' "$base/api/users/1" $null $null
+$r = Invoke-Api 'Get' "$base/api/users/1" $null $adminAuth
 Check "user detail works" ($r.json.data.username -eq 'admin') ("username=" + $r.json.data.username)
 
-$r = Invoke-Api 'Get' "$base/api/users/999999" $null $null
+$r = Invoke-Api 'Get' "$base/api/users/999999" $null $adminAuth
 Check "missing user handled" ($null -eq $r.json.data) ("data=" + $r.json.data)
+
+# 无令牌与越权都必须被拦下：这是本轮补齐的访问控制
+$r = Invoke-Api 'Get' "$base/api/users" $null $null
+Check "user list without token rejected (401)" ($r.status -eq 401) ("http=" + $r.status)
+$r = Invoke-Api 'Get' "$base/api/users" $null @{ Authorization = ("Bearer " + $tokens['picker']) }
+Check "user list as picker rejected (403)" ($r.status -eq 403) ("http=" + $r.status)
+
+# 拣货员访问报表也需要 report:view，而 PICKER 没有该权限
+$r = Invoke-Api 'Get' "$base/api/report/dashboard" $null @{ Authorization = ("Bearer " + $tokens['picker']) }
+Check "report as picker rejected (403)" ($r.status -eq 403) ("http=" + $r.status)
+
+# 拣货员拥有的接口应当放行
+$r = Invoke-Api 'Get' "$base/api/locations?warehouseId=1&limit=5" $null @{ Authorization = ("Bearer " + $tokens['picker']) }
+Check "picker keeps own permission (locations 200)" ($r.status -eq 200) ("http=" + $r.status)
 
 Write-Host ""
 Write-Host "=== 7. Stop application ==="

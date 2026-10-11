@@ -28,8 +28,14 @@ function Check($name, $condition, $detail) {
     if ($condition) { Write-Host ("  [PASS] {0,-42} {1}" -f $name, $detail) -ForegroundColor Green; $script:pass++ }
     else            { Write-Host ("  [FAIL] {0,-42} {1}" -f $name, $detail) -ForegroundColor Red;   $script:fail++ }
 }
+# 后端已启用认证与权限校验，统一在此引入共享的登录辅助。
+. "$PSScriptRoot\auth-helper.ps1"
+
 function Api($method, $url, $body) {
     $p = @{ Uri = $url; Method = $method; TimeoutSec = 20; UseBasicParsing = $true; SkipHttpErrorCheck = $true }
+    # 携带访问令牌：无令牌或权限不足时接口会返回 401 / 403
+    $__h = Get-AuthHeaders
+    if ($__h) { $p.Headers = $__h }
     if ($body) { $p.Body = $body; $p.ContentType = 'application/json' }
     try { $r = Invoke-WebRequest @p } catch { return @{ status = 0; json = $null; raw = $_.Exception.Message } }
     $j = $null; try { $j = $r.Content | ConvertFrom-Json } catch { }
@@ -116,8 +122,15 @@ $noDoc | ForEach-Object { Write-Host ("      " + $_) }
 
 Write-Host ""
 Write-Host "A6. No leftover temporary files in the project"
+# 只检查我们自己维护的目录。node_modules 等依赖目录里本来就存在大量以下划线
+# 开头的文件（属于第三方包内容），把它们算作残留会造成误报，
+# 因此这里排除依赖与构建产物目录，聚焦源码、文档与脚本区。
 $junk = Get-ChildItem $root -Recurse -File -Force -ErrorAction SilentlyContinue |
-    Where-Object { $_.Name -like '_*' -and $_.Name -ne '__init__.py' -and $_.FullName -notmatch '__pycache__|\\\.git\\' }
+    Where-Object {
+        $_.Name -like '_*' -and
+        $_.Name -ne '__init__.py' -and
+        $_.FullName -notmatch '__pycache__|\\\.git\\|\\node_modules\\|\\target\\|\\dist\\'
+    }
 Check "no underscore-prefixed temp files" ($junk.Count -eq 0) ("found: " + $junk.Count)
 $junk | ForEach-Object { Write-Host ("      " + $_.FullName.Replace($root + '\', '')) }
 
@@ -179,6 +192,14 @@ for ($i = 1; $i -le 40; $i++) {
     if ($proc.HasExited) { break }
     if ((Api 'Get' "$base/api/health/ping" $null).status -eq 200) { $ready = $true; break }
 }
+# 登录以取得访问令牌（后端所有 /api/** 接口均要求认证）
+if ($ready) {
+    $null = Initialize-Auth
+    if (-not $global:WMS_TOKEN) {
+        Write-Host '  登录失败，后续请求将因缺少令牌返回 401' -ForegroundColor Red
+    }
+}
+
 if (-not $ready) {
     Write-Host "  application not ready" -ForegroundColor Red
     if (-not $proc.HasExited) { $proc.Kill() }
@@ -276,8 +297,12 @@ Check "invalid abc class rejected (400)" ($r.status -eq 400) ("http=" + $r.statu
 # the endpoint expects JSON is the simplest way to trigger it.
 $formResp = $null
 try {
-    $formResp = Invoke-WebRequest -Uri "$base/api/products" -Method Post -Body @{ productName = 'x' } `
-        -TimeoutSec 15 -UseBasicParsing -SkipHttpErrorCheck
+    # 需要带令牌，否则会先被鉴权拦下返回 401，测不到 415
+    $formParams = @{ Uri = "$base/api/products"; Method = 'Post'; Body = @{ productName = 'x' }
+                     TimeoutSec = 15; UseBasicParsing = $true; SkipHttpErrorCheck = $true }
+    $formAuth = Get-AuthHeaders
+    if ($formAuth) { $formParams.Headers = $formAuth }
+    $formResp = Invoke-WebRequest @formParams
 } catch { }
 Check "wrong content type -> 415" ($null -ne $formResp -and [int]$formResp.StatusCode -eq 415) `
       ("http=" + $(if ($formResp) { [int]$formResp.StatusCode } else { "no response" }))

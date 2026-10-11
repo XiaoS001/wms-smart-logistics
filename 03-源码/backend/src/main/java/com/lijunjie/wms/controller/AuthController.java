@@ -1,8 +1,8 @@
 package com.lijunjie.wms.controller;
 
 import com.lijunjie.wms.common.Result;
+import com.lijunjie.wms.common.context.UserContext;
 import com.lijunjie.wms.common.exception.BusinessException;
-import com.lijunjie.wms.common.util.JwtUtil;
 import com.lijunjie.wms.dto.LoginRequest;
 import com.lijunjie.wms.dto.LoginResponse;
 import com.lijunjie.wms.entity.SysUser;
@@ -12,11 +12,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,11 +30,8 @@ public class AuthController {
 
     private final SysUserService sysUserService;
 
-    private final JwtUtil jwtUtil;
-
-    public AuthController(SysUserService sysUserService, JwtUtil jwtUtil) {
+    public AuthController(SysUserService sysUserService) {
         this.sysUserService = sysUserService;
-        this.jwtUtil = jwtUtil;
     }
 
     /**
@@ -52,25 +49,23 @@ public class AuthController {
     /**
      * 获取当前登录用户信息。
      *
-     * <p>前端用它恢复登录态：携带令牌请求，服务端解析后返回用户基本信息与权限。</p>
+     * <p>前端用它恢复登录态：携带令牌请求，服务端返回用户基本信息、角色与权限。</p>
      *
-     * @param authorization 形如 {@code Bearer xxx.yyy.zzz} 的请求头
-     * @return 当前用户信息
+     * <p>令牌校验与身份装载已由 {@code AuthInterceptor} 完成，这里直接读取
+     * {@link UserContext}，不再重复解析令牌，避免两处逻辑不一致。</p>
+     *
+     * <p>响应必须包含 {@code roles} 与 {@code permissions}：前端的个人信息页
+     * 依赖这两个字段展示角色标签与权限清单，缺少时页面会显示为空。</p>
      */
-    @Operation(summary = "当前用户信息", description = "根据请求头中的令牌返回当前用户信息")
+    @Operation(summary = "当前用户信息", description = "返回当前用户的资料、角色与权限清单")
     @GetMapping("/me")
-    public Result<Map<String, Object>> currentUser(
-            @RequestHeader(value = "Authorization", required = false) String authorization) {
+    public Result<Map<String, Object>> currentUser() {
 
-        String token = extractToken(authorization);
-        if (token == null) {
+        UserContext.CurrentUser current = UserContext.get();
+        if (current == null) {
             throw new BusinessException(401, "未提供访问令牌");
         }
-        Long userId = jwtUtil.getUserId(token);
-        if (userId == null) {
-            throw new BusinessException(401, "令牌无效或已过期");
-        }
-        SysUser user = sysUserService.getById(userId);
+        SysUser user = sysUserService.getById(current.getUserId());
         if (user == null) {
             throw new BusinessException(401, "用户不存在");
         }
@@ -82,6 +77,8 @@ public class AuthController {
         data.put("phone", user.getPhone());
         data.put("email", user.getEmail());
         data.put("status", user.getStatus());
+        data.put("roles", current.getRoles());
+        data.put("permissions", new ArrayList<String>(current.getPermissions()));
         return Result.success(data);
     }
 
@@ -95,17 +92,5 @@ public class AuthController {
     @PostMapping("/logout")
     public Result<Void> logout() {
         return Result.success("已退出登录", null);
-    }
-
-    /** 从 Authorization 请求头中提取令牌，兼容不带 Bearer 前缀的写法 */
-    private String extractToken(String authorization) {
-        if (authorization == null || authorization.trim().isEmpty()) {
-            return null;
-        }
-        String value = authorization.trim();
-        if (value.regionMatches(true, 0, "Bearer ", 0, 7)) {
-            value = value.substring(7).trim();
-        }
-        return value.isEmpty() ? null : value;
     }
 }
