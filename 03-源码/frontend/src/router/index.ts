@@ -24,9 +24,14 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '登录', hidden: true }
   },
   {
+    // 根路由只作为布局容器：它没有 name，也没有 meta.title，
+    // 若不特殊处理，菜单会把它当成一个分组，标题回退成 path（即 "/"），
+    // 于是侧边栏顶部会多出一个高亮的 "/" 项。
+    // 标记 meta.layout 后，useMenu 会跳过它本身、把子项提升到顶层。
     path: '/',
     component: () => import('@/layout/index.vue'),
     redirect: '/dashboard',
+    meta: { layout: true },
     children: [
       {
         path: 'dashboard',

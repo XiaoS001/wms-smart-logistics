@@ -16,6 +16,18 @@ const { menus } = useMenu()
 
 const collapsed = computed(() => appStore.sidebarCollapsed)
 
+/**
+ * 默认展开全部分组，且不限制同时展开的数量。
+ *
+ * 菜单只有 5 个分组、16 个页面，如果默认全部收起，一进系统只能看到
+ * 分组标题，看不出系统有哪些功能，演示和验收时都要先逐个点开。
+ * 若再限制为「只能展开一个」，同样无法一览全部功能。
+ * 因此这里默认全部展开、且允许同时展开，让导航结构一眼可见。
+ */
+const defaultOpeneds = computed(() =>
+  menus.value.filter((m) => m.children && m.children.length).map((m) => m.key)
+)
+
 /** 当前高亮菜单：优先取 meta.activeMenu，其次取路由 name */
 const activeMenu = computed(() => {
   const meta = route.meta as Record<string, unknown>
@@ -38,12 +50,12 @@ const activeMenu = computed(() => {
     <ElScrollbar class="sidebar__scroll">
       <ElMenu
         :default-active="activeMenu"
+        :default-openeds="defaultOpeneds"
         :collapse="collapsed"
         :collapse-transition="false"
         background-color="transparent"
         text-color="var(--wms-sidebar-text)"
         active-text-color="var(--wms-sidebar-text-active)"
-        unique-opened
         router
       >
         <template v-for="menu in menus" :key="menu.key">
@@ -106,9 +118,11 @@ const activeMenu = computed(() => {
     border-radius: 8px;
     background: linear-gradient(135deg, var(--el-color-primary), #60a5fa);
     color: #fff;
-    font-size: 13px;
+    // 字号与字距要让 "WMS" 完整落在 34px 方块内：
+    // 13px 粗体加 0.5px 字距时文字宽约 36px，会溢出方块边缘。
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
